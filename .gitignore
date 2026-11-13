@@ -8,3 +8,5 @@ build/
 *.log
 .vscode/*
 !.vscode/settings.json
+*.db
+.env
