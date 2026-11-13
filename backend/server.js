@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 
@@ -12,6 +13,7 @@ app.get('/api/health', (req, res) => {
 const doctorsRouter = require('./routes/doctors');  
 app.use('/api/doctors', doctorsRouter);              
 
-app.listen(3000, () => {
-  console.log('Backend lancé sur http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Backend lancé sur le port ${PORT}`);
 });
