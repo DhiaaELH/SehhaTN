@@ -10,6 +10,7 @@ import { HomeComponent } from './home.component';
 import type { HomeSearch } from './home.component';
 import { DoctorService, SPECIALTIES, GOVERNORATES } from './doctor.service';
 import type { Doctor } from './doctor.service';
+import { AuthService } from './auth.service';
 
 type View = 'home' | 'doctors' | 'guide' | 'orientation' | 'about' | 'account' | 'doctor';
 const PATHS: Record<Exclude<View, 'doctor'>, string> = {
@@ -29,7 +30,7 @@ function viewFromUrl(url: string): View {
     <header class="site-header">
       <a class="brand" href="#accueil" (click)="go('home')" aria-label="SehhaTN accueil"><span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a>
       <nav class="main-nav" aria-label="Navigation principale"><button [class.active]="view==='home'" (click)="go('home')">{{ t('Accueil','الرئيسية') }}</button><button [class.active]="view==='doctors'" (click)="go('doctors')">{{ t('Médecins','الأطباء') }}</button><button [class.active]="view==='guide'" (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button><button [class.active]="view==='orientation'" (click)="go('orientation')">{{ t('Orientation','التوجيه') }}</button><button [class.active]="view==='about'" (click)="go('about')">{{ t('À propos','من نحن') }}</button></nav>
-      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="icon-button user-button" (click)="go('account')" aria-label="Mon compte"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" aria-label="Menu">☰</button></div>
+      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="account-pill" (click)="go('account')" [attr.aria-label]="auth.user() ? t('Mon compte', 'حسابي') : t('Se connecter ou créer un compte', 'تسجيل الدخول أو إنشاء حساب')"><span class="account-pill-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="account-pill-text">@if (auth.user(); as u) {<b>{{ firstName(u.name) }}</b><small>{{ t('Mon compte', 'حسابي') }}</small>} @else {<b>{{ t('Se connecter', 'تسجيل الدخول') }}</b><small>{{ t('ou créer un compte', 'أو إنشاء حساب') }}</small>}</span></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" aria-label="Menu">☰</button></div>
     </header>
     <nav class="mobile-nav" *ngIf="mobileOpen"><button (click)="go('home')">{{ t('Accueil','الرئيسية') }}</button><button (click)="go('doctors')">{{ t('Médecins','الأطباء') }}</button><button (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button><button (click)="go('orientation')">{{ t('Orientation','التوجيه') }}</button><button (click)="go('about')">{{ t('À propos','من نحن') }}</button></nav>
 
@@ -54,9 +55,11 @@ function viewFromUrl(url: string): View {
   </div>
 ` })
 export class AppComponent {
+  firstName(name: string) { return name.trim().split(/\s+/)[0]; }
   mobileOpen = false; searchText = ''; specialtyFilter = ''; cityFilter = ''; guideQuery = ''; selectedCategory = 'Tout'; selectedSymptoms: string[] = []; orientationStep = 1; duration = ''; guidance: 'soon' | 'monitor' = 'monitor'; favorites: string[] = []; selectedDoctor: Doctor | null = null; selectedArticle: any = null; toastMessage = '';
   specialties = SPECIALTIES; cities = GOVERNORATES; categories = ['Tout','Santé courante','Cardiologie','Bien-être']; durations = ['Depuis aujourd’hui','Depuis quelques jours','Depuis plusieurs semaines'];
   doctorService = inject(DoctorService);
+  auth = inject(AuthService);
   private router = inject(Router);
 langService = inject(LangService);
 private url = toSignal(

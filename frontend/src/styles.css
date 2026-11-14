@@ -7,3 +7,12 @@
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
 .hero-visual{border-radius:20px;overflow:hidden}.hero-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% center;border-radius:20px;opacity:.93;mix-blend-mode:multiply;mask-image:linear-gradient(90deg,transparent 0%,#000 16%,#000 89%,transparent 100%);animation:photo-reveal 1.1s ease-out both}.doctor-art,.tunisia-shape{display:none!important}.hero-visual:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#edf5ffb3,transparent 39%,transparent 82%,#e7f1f8a6);z-index:0}.hero-visual>*:not(.hero-photo){z-index:2}.hero-visual .visual-orbit{z-index:1}@keyframes photo-reveal{from{opacity:0;transform:scale(1.035)}to{opacity:.93;transform:scale(1)}}@media(max-width:700px){.hero-visual{border-radius:14px}.hero-photo{object-position:58% 28%;border-radius:14px}.hero-visual:after{background:linear-gradient(90deg,#edf5ff60,transparent 33%,transparent 82%,#e7f1f880)}}
+.account-pill{display:flex;align-items:center;gap:10px;height:46px;padding-block:0;padding-inline:5px 18px;border:0;border-radius:999px;background:linear-gradient(135deg,var(--navy),#0d5781);color:#fff;cursor:pointer;box-shadow:0 8px 20px #0b325e40;transition:transform .15s,box-shadow .15s;text-align:start}
+.account-pill:hover{transform:translateY(-1px);box-shadow:0 12px 26px #0b325e55}
+.account-pill:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.account-pill-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#ffffff26;flex:none}
+.account-pill-icon svg{width:20px;fill:none;stroke:#fff;stroke-width:1.8;stroke-linecap:round}
+.account-pill-text{display:flex;flex-direction:column;line-height:1.15;white-space:nowrap}
+.account-pill-text b{font-size:13px;font-weight:800}
+.account-pill-text small{font-size:10.5px;opacity:.85;font-weight:600}
+@media(max-width:700px){.account-pill{height:40px;padding-inline:5px}.account-pill-text{display:none}.account-pill-icon{width:30px;height:30px}}
