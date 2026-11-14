@@ -24,6 +24,7 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ error: 'Erreur serveur' });
 });
+app.use('/api/news', require('./routes/news'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
