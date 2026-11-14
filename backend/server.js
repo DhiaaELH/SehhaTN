@@ -1,6 +1,10 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const express = require('express');
 const cors = require('cors');
+
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET manquant : ajoute-le dans backend/.env');
+}
 
 const app = express();
 app.use(cors());
@@ -10,8 +14,14 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'Le backend SehhaTN fonctionne' });
 });
 
-const doctorsRouter = require('./routes/doctors');  
-app.use('/api/doctors', doctorsRouter);              
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/doctors', require('./routes/doctors'));
+
+// Gestion des erreurs inattendues : réponse propre au lieu d'un plantage
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Erreur serveur' });
+});
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

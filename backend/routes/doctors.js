@@ -1,27 +1,31 @@
 const express = require('express');
-const db = require('../db');
+const pool = require('../db');
 
 const router = express.Router();
 
-
-router.get('/', (req, res) => {
+// GET /api/doctors?specialty=Dentiste&governorate=Sfax&city=Sfax
+router.get('/', async (req, res) => {
   const { specialty, governorate, city } = req.query;
 
-  let sql = 'SELECT * FROM doctors WHERE 1=1';
+  const conditions = [];
   const params = [];
+  if (specialty)   { params.push(specialty);   conditions.push(`specialty = $${params.length}`); }
+  if (governorate) { params.push(governorate); conditions.push(`governorate = $${params.length}`); }
+  if (city)        { params.push(city);        conditions.push(`city = $${params.length}`); }
 
-  if (specialty)   { sql += ' AND specialty = ?';   params.push(specialty); }
-  if (governorate) { sql += ' AND governorate = ?'; params.push(governorate); }
-  if (city)        { sql += ' AND city = ?';        params.push(city); }
-
-  res.json(db.prepare(sql).all(...params));
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const { rows } = await pool.query(`SELECT * FROM doctors ${where} ORDER BY name`, params);
+  res.json(rows);
 });
 
+// GET /api/doctors/1
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id)) return res.status(400).json({ error: 'Identifiant invalide' });
 
-router.get('/:id', (req, res) => {
-  const doctor = db.prepare('SELECT * FROM doctors WHERE id = ?').get(req.params.id);
-  if (!doctor) return res.status(404).json({ error: 'Médecin introuvable' });
-  res.json(doctor);
+  const { rows } = await pool.query('SELECT * FROM doctors WHERE id = $1', [id]);
+  if (!rows[0]) return res.status(404).json({ error: 'Médecin introuvable' });
+  res.json(rows[0]);
 });
 
 module.exports = router;

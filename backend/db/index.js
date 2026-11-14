@@ -1,9 +1,10 @@
-const Database = require('better-sqlite3');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config({ quiet: true });
+const { Pool } = require('pg');
 
-const db = new Database(path.join(__dirname, '..', 'sehhatn.db'));
-db.pragma('foreign_keys = ON');
-db.exec(fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8'));
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL manquant : crée le fichier backend/.env');
+}
 
-module.exports = db;
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+module.exports = pool;
