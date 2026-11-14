@@ -17,20 +17,19 @@ Il est fonctionnel. Vous pouvez dès maintenant vous connecter en tant que **mé
 
 ## Aperçu
 
-### Accueil
-![Page d'accueil](docs/accueil.PNG)
+Cliquez sur une image pour l'agrandir.
 
-### Carte du corps
-![Carte du corps interactive](docs/body-map.PNG)
-
-### Espace médecin
-![Connexion médecin](docs/medecin-login.PNG)
-
-### Espace patient
-![Connexion patient](docs/patient-login.PNG)
-
-### Profil médecin
-![Profil médecin et réservation](docs/profil-medecin.PNG)
+<table>
+  <tr>
+    <td align="center"><a href="docs/acceuil.PNG"><img src="docs/acceuil.PNG" width="260" alt="Page d'accueil"></a><br><sub>Accueil</sub></td>
+    <td align="center"><a href="docs/body-map.PNG"><img src="docs/body-map.PNG" width="260" alt="Carte du corps interactive"></a><br><sub>Carte du corps</sub></td>
+    <td align="center"><a href="docs/profil-medecin.PNG"><img src="docs/profil-medecin.PNG" width="260" alt="Profil médecin et réservation"></a><br><sub>Profil médecin</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/medecin-login.PNG"><img src="docs/medecin-login.PNG" width="260" alt="Connexion médecin"></a><br><sub>Espace médecin</sub></td>
+    <td align="center"><a href="docs/patient-login.PNG"><img src="docs/patient-login.PNG" width="260" alt="Connexion patient"></a><br><sub>Espace patient</sub></td>
+  </tr>
+</table>
 
 ## Choix du framework
 
