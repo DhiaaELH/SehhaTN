@@ -1,12 +1,14 @@
+import { DoctorAvailabilityComponent } from './doctor-availability.component';
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
 import { DoctorProfileComponent } from './doctor-profile.component';
+import { MyAppointmentsComponent } from './my-appointments.component';
 
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [FormsModule, DoctorProfileComponent],
+  imports: [FormsModule, DoctorProfileComponent, DoctorAvailabilityComponent, MyAppointmentsComponent],
   styles: [`
     :host { display: flex; flex-direction: column; gap: 20px; width: min(100%, 420px); }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
@@ -23,7 +25,11 @@ import { DoctorProfileComponent } from './doctor-profile.component';
         <p>{{ u.email }} · {{ roleLabel(u.role) }}</p>
         <button class="primary-btn" (click)="auth.logout()">{{ t('Se déconnecter', 'تسجيل الخروج') }}</button>
       </div>
-      @if (u.role === 'doctor') { <app-doctor-profile [lang]="lang()" /> }
+      @if (u.role !== 'admin') { <app-my-appointments [lang]="lang()" /> }
+@if (u.role === 'doctor') {
+  <app-doctor-availability [lang]="lang()" />
+  <app-doctor-profile [lang]="lang()" />
+}
     } @else {
       <div class="account-card">
         <span class="account-brand">✚</span>

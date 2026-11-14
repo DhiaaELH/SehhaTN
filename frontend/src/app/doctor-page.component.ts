@@ -1,10 +1,12 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import type { Doctor } from './doctor.service';
+import { SlotPickerComponent } from './slot-picker.component';
 
 /** Page de profil d'un médecin. */
 @Component({
   selector: 'app-doctor-page',
   standalone: true,
+  imports: [SlotPickerComponent],
   styles: [`
     :host { display: block; }
     .dp-back { border: 0; background: none; color: var(--navy); font-weight: 700; font-size: 12px; cursor: pointer; padding: 6px 0; margin-bottom: 14px; }
@@ -44,7 +46,7 @@ import type { Doctor } from './doctor.service';
 
     /* ---------- contenu ---------- */
     .dp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; margin-top: 22px; align-items: start; }
-    .dp-main-col { display: grid; gap: 20px; }
+    .dp-main-col { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
     .dp-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
     h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 800 17px Montserrat, sans-serif; color: var(--deep); }
     h2::before { content: ''; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(var(--teal), var(--mint)); }
@@ -160,7 +162,11 @@ import type { Doctor } from './doctor.service';
               </div>
             }
           </article>
+    
+                  <app-slot-picker #picker id="rdv" class="dp-rise dp-d3" [style.display]="booking() ? null : 'none'"
+                 [doctorId]="doctor().id" [lang]="lang()" (closed)="booking.set(false)" />
 
+        @if (picker.status() === 'none') {
           <article class="dp-card dp-rise dp-d3">
             <h2>{{ t('Horaires de consultation', 'أوقات الاستشارة') }}</h2>
             @if (rows().length) {
@@ -174,6 +180,8 @@ import type { Doctor } from './doctor.service';
               </ul>
             } @else { <p class="dp-muted">{{ t('Horaires non communiqués.', 'لم يتم تحديد الأوقات.') }}</p> }
           </article>
+        }
+
 
           <article class="dp-card dp-rise dp-d4">
             <h2>{{ t('Avis des patients', 'آراء المرضى') }}</h2>
@@ -194,7 +202,7 @@ import type { Doctor } from './doctor.service';
               @if (doctor().consultationFee !== null) { <b>{{ doctor().consultationFee }} <small>DT</small></b> }
               @else { <span>{{ t('Tarif non communiqué', 'السعر غير محدد') }}</span> }
             </div>
-            <button class="dp-btn dp-btn-main" (click)="soon(t('La prise de rendez-vous arrive bientôt.', 'حجز المواعيد قريباً.'))">
+            <button class="dp-btn dp-btn-main" (click)="openBooking()">
               {{ t('Prendre rendez-vous', 'حجز موعد') }}
             </button>
             <button class="dp-btn dp-btn-soft" (click)="soon(t('La messagerie arrive bientôt.', 'المراسلة قريباً.'))">
@@ -216,6 +224,11 @@ import type { Doctor } from './doctor.service';
   `,
 })
 export class DoctorPageComponent {
+  readonly booking = signal(false);
+openBooking() {
+  this.booking.set(true);
+  setTimeout(() => document.getElementById('rdv')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
   readonly doctor = input.required<Doctor>();
   readonly lang = input<'fr' | 'ar'>('fr');
   readonly back = output<void>();
