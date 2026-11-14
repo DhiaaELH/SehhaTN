@@ -20,3 +20,10 @@ CREATE TABLE IF NOT EXISTS doctors (
   verified    BOOLEAN NOT NULL DEFAULT FALSE,
   created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Champs supplémentaires pour la page de profil des médecins
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS bio              TEXT;
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS languages        TEXT[] NOT NULL DEFAULT '{}';
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS years_experience INTEGER;
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS consultation_fee INTEGER;
+ALTER TABLE doctors ADD COLUMN IF NOT EXISTS accepts_cnam     BOOLEAN;

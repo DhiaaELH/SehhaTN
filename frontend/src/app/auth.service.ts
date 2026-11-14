@@ -11,7 +11,7 @@ const API_URL =
 
 const TOKEN_KEY = 'sehhatn_token';
 
-class ApiError extends Error {
+export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
     super(message);
   }

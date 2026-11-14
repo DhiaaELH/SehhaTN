@@ -1,13 +1,14 @@
 import { Component, inject, input, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
+import { DoctorProfileComponent } from './doctor-profile.component';
 
 @Component({
   selector: 'app-account',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, DoctorProfileComponent],
   styles: [`
-    :host { display: block; width: min(100%, 420px); }
+    :host { display: flex; flex-direction: column; gap: 20px; width: min(100%, 420px); }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
     select { display: block; width: 100%; height: 42px; margin-top: 7px; border: 1px solid #dce4eb;
              border-radius: 6px; padding: 0 12px; font-size: 11px; background: #fff; }
@@ -22,6 +23,7 @@ import { AuthService } from './auth.service';
         <p>{{ u.email }} · {{ roleLabel(u.role) }}</p>
         <button class="primary-btn" (click)="auth.logout()">{{ t('Se déconnecter', 'تسجيل الخروج') }}</button>
       </div>
+      @if (u.role === 'doctor') { <app-doctor-profile [lang]="lang()" /> }
     } @else {
       <div class="account-card">
         <span class="account-brand">✚</span>
