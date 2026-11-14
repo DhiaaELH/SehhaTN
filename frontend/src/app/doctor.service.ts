@@ -89,6 +89,7 @@ function toDoctor(d: ApiDoctor): Doctor {
 
 @Injectable({ providedIn: 'root' })
 export class DoctorService {
+  
   private auth = inject(AuthService);
 
   /** La liste des médecins venant de la base de données. */
@@ -112,4 +113,10 @@ export class DoctorService {
       this.loading.set(false);
     }
   }
+  async getById(id: number): Promise<Doctor> {
+  const cached = this.doctors().find((d) => d.id === id);
+  if (cached) return cached;
+  return toDoctor(await this.auth.request<ApiDoctor>(`/doctors/${id}`));
 }
+}
+
