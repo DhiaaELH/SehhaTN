@@ -14,4 +14,14 @@ function requireAuth(req, res, next) {
   }
 }
 
-module.exports = { requireAuth };
+
+function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ error: 'Action réservée à : ' + roles.join(', ') });
+    }
+    next();
+  };
+}
+
+module.exports = { requireAuth, requireRole };
