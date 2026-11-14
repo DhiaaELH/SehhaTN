@@ -18,19 +18,19 @@ Il est fonctionnel. Vous pouvez dès maintenant vous connecter en tant que **mé
 ## Aperçu
 
 ### Accueil
-![Page d'accueil](docs/accueil.png)
+![Page d'accueil](docs/accueil.PNG)
 
 ### Carte du corps
-![Carte du corps interactive](docs/body-map.png)
+![Carte du corps interactive](docs/body-map.PNG)
 
 ### Espace médecin
-![Connexion médecin](docs/medecin-login.png)
+![Connexion médecin](docs/medecin-login.PNG)
 
 ### Espace patient
-![Connexion patient](docs/patient-login.png)
+![Connexion patient](docs/patient-login.PNG)
 
 ### Profil médecin
-![Profil médecin et réservation](docs/profil-medecin.png)
+![Profil médecin et réservation](docs/profil-medecin.PNG)
 
 ## Choix du framework
 
