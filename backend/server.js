@@ -15,7 +15,9 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/doctors', require('./routes/schedule'));
 app.use('/api/doctors', require('./routes/doctors'));
+app.use('/api/appointments', require('./routes/appointments'));
 
 // Gestion des erreurs inattendues : réponse propre au lieu d'un plantage
 app.use((err, req, res, next) => {
