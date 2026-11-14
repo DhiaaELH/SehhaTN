@@ -18,7 +18,14 @@ import { ApiDoctor, DoctorService, GOVERNORATES, LANGUAGES, SPECIALTIES } from '
     textarea { height: 90px; padding: 10px 12px; resize: vertical; }
     .langs { display: flex; gap: 16px; margin-top: 8px; }
     .langs label { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 600; }
-    .langs input { width: auto; height: auto; margin: 0; }
+        .field { display: block; font-size: 10px; font-weight: 700; color: #455a6e; margin-bottom: 14px; }
+    .langs input[type=checkbox] { appearance: none; -webkit-appearance: none; display: inline-block; flex: none;
+      width: 16px; height: 16px; margin: 0; padding: 0; border: 1.5px solid #9fb3c4; border-radius: 4px;
+      background: #fff; cursor: pointer; position: relative; }
+    .langs input[type=checkbox]:checked { background: #00a6b8; border-color: #00a6b8; }
+    .langs input[type=checkbox]:checked::after { content: ''; position: absolute; left: 4px; top: 1px;
+      width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+    .langs input[type=checkbox]:focus-visible { outline: 2px solid #00a6b8; outline-offset: 2px; }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   `],
   template: `
@@ -63,13 +70,13 @@ import { ApiDoctor, DoctorService, GOVERNORATES, LANGUAGES, SPECIALTIES } from '
         <label>{{ t('Présentation', 'تقديم') }}
           <textarea name="bio" maxlength="500" [(ngModel)]="bio"></textarea>
         </label>
-        <label>{{ t('Langues parlées', 'اللغات') }}
+        <div class="field">{{ t('Langues parlées', 'اللغات') }}
           <div class="langs">
             @for (l of languages; track l) {
               <label><input type="checkbox" [name]="'lang-' + l" [(ngModel)]="langs[l]"> {{ l }}</label>
             }
           </div>
-        </label>
+        </div>
         <div class="row">
           <label>{{ t('Années d’expérience', 'سنوات الخبرة') }}
             <input type="number" name="years" min="0" max="60" step="1" [(ngModel)]="years">
