@@ -5,6 +5,7 @@ export const routes: Routes = [
   { path: 'doctors', pathMatch: 'full', children: [] },
   { path: 'guide', children: [] },
   { path: 'orientation', children: [] },
+  { path: 'lieux-de-sante', children: [] },
   { path: 'about', children: [] },
   { path: 'account', children: [] },
   {

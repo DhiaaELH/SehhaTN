@@ -42,7 +42,8 @@ Cliquez sur une image pour l'agrandir.
 - **Actualités santé** : articles récents de flux RSS officiels (OMS), mis en cache côté serveur
 - **Annuaire** : médecins réels inscrits sur le site, avec filtres
 - **Profil médecin** : page dédiée avec tarif, langues, CNAM, adresse, badge de profil vérifié et créneaux libres
-- **Guide santé** et **orientation en 3 étapes** (contenu statique pour l'instant)
+- **Guide santé** et **chat d’orientation** en français et en arabe : questions de clarification, repérage prudent de quelques signes d’urgence et conseils généraux
+- **Lieux de soins** : recherche de pharmacies, cliniques et hôpitaux par ville en Tunisie, tri par proximité, fiche détaillée et itinéraire
 - **Bilingue** français et arabe (affichage de droite à gauche), adapté au mobile
 
 ### Patient
@@ -64,6 +65,8 @@ Cliquez sur une image pour l'agrandir.
 - **Aucune double réservation** possible, garantie par la base de données
 - **Mots de passe chiffrés**, sessions par jeton et accès limité selon le rôle (patient, médecin, admin)
 - **Vie privée** : les patients ne voient jamais l'identité des autres
+
+Le chat d’orientation fonctionne sans transmettre les symptômes à un service d’IA. Il ne pose pas de diagnostic et rappelle d’appeler le SAMU au 190 en cas de signe urgent. Les lieux de soins viennent d’OpenStreetMap via Nominatim et Overpass ; la couverture, les photos, les horaires et les coordonnées dépendent des contributions cartographiques et peuvent être incomplets. La recherche par ville transmet le nom de la ville saisie aux services cartographiques. La page ne demande pas la position GPS.
 
 ## Architecture
 
@@ -91,9 +94,9 @@ SehhaTN/
 
 ```bash
 git clone https://github.com/DhiaaELH/SehhaTN.git
-cd SehhaTN/backend
-npm install
-cp .env.example .env     # Windows : copy .env.example .env
+cd SehhaTN
+npm install               # installe frontend et backend depuis la racine
+copy backend/.env.example backend/.env   # Windows PowerShell
 ```
 
 Renseigner dans `backend/.env` :
@@ -105,18 +108,16 @@ JWT_SECRET=une-longue-phrase-aleatoire
 # NEWS_FEEDS=https://exemple.org/flux.xml
 ```
 
-Créer les tables et lancer le serveur :
+Créer les tables et lancer l’API (dans un premier terminal, après avoir configuré `backend/.env`) :
 
 ```bash
 npm run db:init
-npm run dev
+npm run start:backend
 ```
 
-Dans un second terminal, lancer le site :
+Dans un second terminal, toujours à la racine, lancer le site Angular :
 
 ```bash
-cd frontend
-npm install
 npm start
 ```
 

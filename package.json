@@ -1,0 +1,15 @@
+{
+  "name": "sehhatn",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "start": "npm run start --workspace=angular-app",
+    "start:backend": "npm run dev --workspace=backend",
+    "build": "npm run build --workspace=angular-app",
+    "db:init": "npm run db:init --workspace=backend"
+  }
+}

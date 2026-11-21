@@ -19,6 +19,12 @@ interface NewsItem { title: string; link: string; source: string; image: string 
         <p>{{ t('Trouvez un médecin en Tunisie, ou montrez-nous où ça fait mal.', 'ابحث عن طبيب في تونس، أو أرنا مكان الألم.') }}</p>
       </header>
 
+      <section class="hm-photo-hero">
+        <img src="/assets/home-tunisia-healthcare-banner.png" [alt]="t('Bannière SehhaTN : une médecin et les services de santé en Tunisie', 'SehhaTN: طبيبة وخدمات صحية في تونس')" fetchpriority="high">
+        <div class="hm-photo-shade"></div>
+        <div class="hm-photo-copy"><span>{{ t('SEHHA TN · AU PLUS PRÈS DE VOUS', 'صحتك في تونس · أقرب إليك') }}</span><h2>{{ t('Votre santé mérite un bon point de départ.', 'صحتك تستحق بداية موفقة.') }}</h2><p>{{ t('Médecins, conseils santé et services utiles, réunis au même endroit.', 'الأطباء والإرشادات الصحية والخدمات المفيدة في مكان واحد.') }}</p></div>
+      </section>
+
       <div class="hm-grid">
         <div class="hm-card hm-map"><app-body-map (pick)="go({ specialty: $event })"/></div>
 
@@ -50,18 +56,12 @@ interface NewsItem { title: string; link: string; source: string; image: string 
           </div>
         </form>
 
-        <div class="hm-card hm-ai">
-          <div class="hm-ai-top"><h2>{{ t('Consultation rapide', 'استشارة سريعة') }}</h2><span class="hm-soon">{{ t('Bientôt disponible', 'قريباً') }}</span></div>
-          <textarea disabled rows="3" [placeholder]="t('Décrivez ce que vous ressentez…', 'صف ما تشعر به…')"></textarea>
-          <button class="hm-ai-btn" type="button" disabled>{{ t('Obtenir une orientation', 'احصل على توجيه') }}</button>
-          <p>{{ t('Un assistant vous orientera vers la bonne spécialité. Il ne remplace pas un médecin. Urgence : ', 'مساعد يوجهك إلى التخصص المناسب. لا يغني عن الطبيب. في الحالات العاجلة: ') }}<a href="tel:190">190</a></p>
-        </div>
       </div>
 
       <section class="hm-news">
         <div class="hm-news-head">
           <h2>{{ t('Actualités santé', 'أخبار صحية') }}</h2>
-          <span>{{ t('Sources : flux officiels', 'المصادر: مواقع رسمية') }}</span>
+          <span>{{ t('Dernières nouvelles · sources officielles', 'آخر الأخبار · مصادر رسمية') }}</span>
         </div>
         @if (news() === null) {
           <div class="hm-news-grid">@for (i of [1,2,3,4]; track i) { <div class="hm-skel"></div> }</div>
@@ -82,7 +82,7 @@ interface NewsItem { title: string; link: string; source: string; image: string 
             }
           </div>
         } @else {
-          <p class="hm-news-empty">{{ t('Les actualités sont momentanément indisponibles.', 'الأخبار غير متاحة حالياً.') }}</p>
+          <div class="hm-news-empty"><p>{{ t('Les actualités sont momentanément indisponibles.', 'الأخبار غير متاحة حالياً.') }}</p><button type="button" (click)="loadNews()">{{ t('Réessayer', 'إعادة المحاولة') }}</button></div>
         }
       </section>
     </div>
@@ -94,9 +94,16 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     .hm-head h1 { margin: 0; font-size: clamp(34px, 5vw, 54px); line-height: 1.08; letter-spacing: -.02em; color: var(--navy); font-weight: 800; }
     .hm-head h1 span { color: var(--teal); }
     .hm-head p { margin: 12px 0 0; color: var(--muted); font-size: 16.5px; }
-    .hm-grid { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-areas: "map search" "map ai"; gap: 20px; align-items: stretch; }
+    .hm-photo-hero { aspect-ratio: 1932 / 825; height: auto; position: relative; overflow: hidden; border-radius: 22px; margin: 0 0 22px; background: #0b325e; }
+    .hm-photo-hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 35%; }
+    .hm-photo-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(5,31,58,.08),transparent 63%); }
+    .hm-photo-copy { position:absolute; left:7%; top:50%; transform:translateY(-50%); max-width:43%; color:#fff; }
+    .hm-photo-copy>span { font-size:10px; font-weight:800; letter-spacing:1.6px; color:#9ee9e0; }
+    .hm-photo-copy h2 { margin:12px 0 8px; color:white; font-size:clamp(24px,3.1vw,38px); line-height:1.15; }
+    .hm-photo-copy p { margin:0; color:#e2edf6; font-size:14px; line-height:1.6; }
+    .hm-grid { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-areas: "map search"; gap: 20px; align-items: stretch; }
     .hm-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 10px 30px rgba(11, 50, 94, .05); }
-    .hm-map { grid-area: map; } .hm-search { grid-area: search; } .hm-ai { grid-area: ai; }
+    .hm-map { grid-area: map; } .hm-search { grid-area: search; }
     h2 { margin: 0; font-size: 22px; color: var(--navy); letter-spacing: -.01em; }
     .hm-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
     .hm-fields .wide { grid-column: 1 / -1; }
@@ -108,17 +115,10 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     .hm-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
     .hm-chips button { border: 1px solid var(--line); background: var(--pale); color: var(--navy); border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
     .hm-chips button:hover { border-color: var(--teal); }
-    .hm-ai { background: linear-gradient(160deg, #f4fbfc, #fff); }
-    .hm-ai-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
-    .hm-soon { background: var(--pale); color: var(--teal); font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
-    textarea { resize: none; background: #f4f7fb; }
-    .hm-ai-btn { margin-top: 10px; width: 100%; border: 0; border-radius: 12px; padding: 11px; background: #cfd9e6; color: #fff; font-weight: 700; cursor: not-allowed; }
-    .hm-ai p { margin: 12px 0 0; font-size: 12px; color: var(--muted); line-height: 1.45; }
-    .hm-ai a { color: var(--coral); font-weight: 700; }
     .hm-news { margin-top: 44px; }
     .hm-news-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
     .hm-news-head span { color: var(--muted); font-size: 12.5px; }
-    .hm-news-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .hm-news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     .hm-news-card { display: flex; flex-direction: column; background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
     .hm-news-card:hover { transform: translateY(-3px); box-shadow: 0 14px 28px rgba(11, 50, 94, .1); }
     .hm-news-card img, .hm-ph { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: var(--pale); }
@@ -132,7 +132,12 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     @media (max-width: 1000px) { .hm-news-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 860px) {
       .hm { padding: 24px 16px 44px; }
-      .hm-grid { grid-template-columns: 1fr; grid-template-areas: "search" "map" "ai"; }
+      .hm-grid { grid-template-columns: 1fr; grid-template-areas: "search" "map"; }
+      .hm-photo-hero { height:auto; aspect-ratio:1932 / 825; border-radius:16px; }
+      .hm-photo-copy { left:6%; right:auto; max-width:46%; }
+      .hm-photo-copy>span { font-size:8px; letter-spacing:.8px; }
+      .hm-photo-copy h2 { font-size:clamp(14px,4vw,24px); margin:7px 0 5px; }
+      .hm-photo-copy p { font-size:10px; }
       .hm-card { padding: 18px; }
     }
     @media (max-width: 520px) { .hm-fields { grid-template-columns: 1fr; } .hm-news-grid { grid-template-columns: 1fr; } }
@@ -153,9 +158,12 @@ export class HomeComponent {
   news = signal<NewsItem[] | null>(null);
   failed = signal<Set<string>>(new Set());
 
-  constructor() {
+  constructor() { this.loadNews(); }
+
+  loadNews() {
+    this.news.set(null);
     this.auth.request<{ items: NewsItem[] }>('/news')
-      .then((r) => this.news.set((r.items ?? []).slice(0, 4)))
+      .then((r) => this.news.set((r.items ?? []).slice(0, 6)))
       .catch(() => this.news.set([]));
   }
 
