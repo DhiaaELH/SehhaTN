@@ -20,7 +20,7 @@ interface NewsItem { title: string; link: string; source: string; image: string 
       </header>
 
       <section class="hm-photo-hero">
-        <img src="/assets/home-tunisia-healthcare-banner.png" [alt]="t('Bannière SehhaTN : une médecin et les services de santé en Tunisie', 'SehhaTN: طبيبة وخدمات صحية في تونس')" fetchpriority="high">
+        <img src="assets/home-tunisia-healthcare-banner.png" [alt]="t('Bannière SehhaTN : une médecin et les services de santé en Tunisie', 'SehhaTN: طبيبة وخدمات صحية في تونس')" fetchpriority="high">
         <div class="hm-photo-shade"></div>
         <div class="hm-photo-copy"><span>{{ t('SEHHA TN · AU PLUS PRÈS DE VOUS', 'صحتك في تونس · أقرب إليك') }}</span><h2>{{ t('Votre santé mérite un bon point de départ.', 'صحتك تستحق بداية موفقة.') }}</h2><p>{{ t('Médecins, conseils santé et services utiles, réunis au même endroit.', 'الأطباء والإرشادات الصحية والخدمات المفيدة في مكان واحد.') }}</p></div>
       </section>
