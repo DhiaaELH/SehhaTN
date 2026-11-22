@@ -1,4 +1,0 @@
-Embedded videos wont play if you open the HTML file directly because Youtube sees it as invalid.
-
-I used VSCode Live Server Extension to open the HTML file and the videos played correctly
-
