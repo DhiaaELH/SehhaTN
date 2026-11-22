@@ -16,6 +16,7 @@ export interface Appointment {
   doctor_id?: number; doctor_name?: string; specialty?: string; address?: string | null; city?: string; phone?: string | null;
   // vue médecin
   patient_name?: string;
+  patient_id?: number;
 }
 
 export const WEEKDAYS_FR = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];

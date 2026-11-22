@@ -1,8 +1,10 @@
 import { Component, inject, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from './auth.service';
 import { BodyMapComponent } from './body-map.component';
-import { GOVERNORATES, SPECIALTIES } from './doctor.service';
+import { ApiDoctor, DoctorService, GOVERNORATES, SPECIALTIES, toDoctor } from './doctor.service';
+import type { Doctor } from './doctor.service';
 import { LangService } from './lang.service';
 
 export interface HomeSearch { specialty?: string; governorate?: string; name?: string; }
@@ -54,9 +56,43 @@ interface NewsItem { title: string; link: string; source: string; image: string 
             <button type="button" (click)="specialty = 'Pédiatre'">Pédiatre</button>
             <button type="button" (click)="governorate = 'Tunis'">Tunis</button>
           </div>
+          <div class="hm-quick">
+            <b>{{ t('Besoin d’être orienté ?', 'هل تحتاج إلى توجيه؟') }}</b>
+            <button type="button" (click)="router.navigateByUrl('/orientation')"><span>⌖</span><strong>{{ t('Orientation guidée', 'التوجيه الموجه') }}</strong><small>{{ t('Quel soin, quel spécialiste ?', 'أي رعاية؟ أي مختص؟') }}</small></button>
+            <button type="button" (click)="router.navigateByUrl('/assistant')"><span>💬</span><strong>{{ t('Assistant santé', 'المساعد الصحي') }}</strong><small>{{ t('Décrivez vos symptômes', 'صف أعراضك') }}</small></button>
+            <button type="button" (click)="router.navigate(['/lieux-de-sante'], { queryParams: { night: 1, near: 1 } })"><span>☾</span><strong>{{ t('Pharmacie de nuit', 'صيدلية ليلية') }}</strong><small>{{ t('La plus proche de moi', 'الأقرب إلي') }}</small></button>
+            <button type="button" class="hm-urg" (click)="router.navigate(['/lieux-de-sante'], { queryParams: { type: 'hospital', near: 1 } })"><span>H</span><strong>{{ t('Urgences', 'الاستعجالي') }}</strong><small>{{ t('Hôpitaux à proximité', 'المستشفيات القريبة') }}</small></button>
+          </div>
         </form>
 
       </div>
+
+      @if (doctorService.specialties().length) {
+        <section class="hm-sec">
+          <div class="hm-news-head"><h2>{{ t('Toutes les spécialités', 'كل التخصصات') }}</h2><span>{{ t('Choisissez le bon interlocuteur', 'اختر المختص المناسب') }}</span></div>
+          <div class="hm-specs">
+            @for (s of doctorService.specialties(); track s.slug) {
+              <button type="button" (click)="go({ specialty: s.name_fr })" [title]="t(s.description_fr ?? '', s.description_ar ?? '')">
+                <span>{{ s.icon }}</span><b>{{ t(s.name_fr, s.name_ar) }}</b><small>{{ s.doctor_count }} {{ t('praticiens', 'مختص') }}</small>
+              </button>
+            }
+          </div>
+        </section>
+      }
+      @if (top().length) {
+        <section class="hm-sec">
+          <div class="hm-news-head"><h2>{{ t('Les mieux notés par les patients', 'الأعلى تقييماً من المرضى') }}</h2><span>{{ t('Avis vérifiés après consultation', 'آراء موثقة بعد الاستشارة') }}</span></div>
+          <div class="hm-top">
+            @for (d of top(); track d.id) {
+              <button type="button" (click)="router.navigate(['/doctors', d.id])">
+                @if (d.photo) { <img [src]="d.photo" alt="" loading="lazy"> } @else { <i [style.background]="d.color">{{ d.initials }}</i> }
+                <b>{{ d.name }}</b><small>{{ doctorService.specialtyLabel(d.specialty, langService.lang()) }} · {{ d.city }}</small>
+                <em>★ {{ d.rating }} <span>({{ d.reviews }} {{ t('avis', 'رأي') }})</span></em>
+              </button>
+            }
+          </div>
+        </section>
+      }
 
       <section class="hm-news">
         <div class="hm-news-head">
@@ -116,6 +152,21 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     .hm-chips button { border: 1px solid var(--line); background: var(--pale); color: var(--navy); border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
     .hm-chips button:hover { border-color: var(--teal); }
     .hm-news { margin-top: 44px; }
+    .hm-quick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px dashed var(--line); }
+    .hm-quick > b { grid-column: 1 / -1; color: var(--navy); font-size: 14px; }
+    .hm-quick button { display: grid; grid-template-columns: 34px 1fr; grid-template-rows: auto auto; column-gap: 10px; text-align: start; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--pale); color: var(--navy); }
+    .hm-quick button:hover { border-color: var(--teal); background: #fff; }
+    .hm-quick span { grid-row: 1 / 3; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #fff; color: var(--teal); font-weight: 800; }
+    .hm-quick strong { font-size: 13.5px; } .hm-quick small { color: var(--muted); font-size: 12px; }
+    .hm-quick .hm-urg span { color: #c62828; }
+    .hm-sec { margin-top: 44px; }
+    .hm-specs { display: grid; grid-template-columns: repeat(auto-fill, minmax(165px, 1fr)); gap: 10px; }
+    .hm-specs button, .hm-top button { display: grid; gap: 3px; justify-items: start; text-align: start; padding: 14px; border: 1px solid var(--line); border-radius: 16px; background: #fff; color: var(--navy); transition: transform .15s, border-color .15s; }
+    .hm-specs button:hover, .hm-top button:hover { transform: translateY(-2px); border-color: var(--teal); }
+    .hm-specs span { font-size: 20px; color: var(--teal); } .hm-specs b { font-size: 14px; } .hm-specs small, .hm-top small { color: var(--muted); font-size: 12px; }
+    .hm-top { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .hm-top img, .hm-top i { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 6px; display: grid; place-items: center; font-style: normal; font-weight: 800; color: var(--deep); }
+    .hm-top b { font-size: 14.5px; } .hm-top em { font-style: normal; color: #c98a00; font-weight: 800; font-size: 13px; } .hm-top em span { color: var(--muted); font-weight: 500; }
     .hm-news-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 16px; }
     .hm-news-head span { color: var(--muted); font-size: 12.5px; }
     .hm-news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
@@ -129,7 +180,7 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     .hm-skel { height: 250px; border-radius: 18px; background: linear-gradient(90deg, #eef3fa, #f8fbff, #eef3fa); background-size: 200% 100%; animation: hmsk 1.4s infinite; }
     @keyframes hmsk { to { background-position: -200% 0; } }
     .hm-news-empty { color: var(--muted); }
-    @media (max-width: 1000px) { .hm-news-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1000px) { .hm-news-grid, .hm-top { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 860px) {
       .hm { padding: 24px 16px 44px; }
       .hm-grid { grid-template-columns: 1fr; grid-template-areas: "search" "map"; }
@@ -140,13 +191,16 @@ interface NewsItem { title: string; link: string; source: string; image: string 
       .hm-photo-copy p { font-size:10px; }
       .hm-card { padding: 18px; }
     }
-    @media (max-width: 520px) { .hm-fields { grid-template-columns: 1fr; } .hm-news-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) { .hm-fields, .hm-quick { grid-template-columns: 1fr; } .hm-news-grid { grid-template-columns: 1fr; } }
     @media (prefers-reduced-motion: reduce) { .hm-skel { animation: none; } .hm-news-card { transition: none; } }
   `],
 })
 export class HomeComponent {
   private auth = inject(AuthService);
-  private langService = inject(LangService);
+  readonly langService = inject(LangService);
+  readonly router = inject(Router);
+  readonly doctorService = inject(DoctorService);
+  readonly top = signal<Doctor[]>([]);
 
   /** Demande d'ouverture de l'annuaire avec ces filtres. */
   search = output<HomeSearch>();
@@ -158,7 +212,10 @@ export class HomeComponent {
   news = signal<NewsItem[] | null>(null);
   failed = signal<Set<string>>(new Set());
 
-  constructor() { this.loadNews(); }
+  constructor() {
+    this.loadNews();
+    this.auth.request<ApiDoctor[]>('/doctors?sort=rating&limit=4').then((d) => this.top.set(d.map(toDoctor))).catch(() => {});
+  }
 
   loadNews() {
     this.news.set(null);

@@ -63,7 +63,7 @@ router.post('/', requireAuth, requireRole('patient'), async (req, res) => {
 router.get('/me', requireAuth, async (req, res) => {
   if (req.user.role === 'doctor') {
     const { rows } = await pool.query(
-      `SELECT a.id, a.starts_at, a.ends_at, a.status, a.note, a.created_at, u.name AS patient_name
+      `SELECT a.id, a.patient_id, a.starts_at, a.ends_at, a.status, a.note, a.created_at, u.name AS patient_name
          FROM appointments a
          JOIN doctors d ON d.id = a.doctor_id
          JOIN users u ON u.id = a.patient_id

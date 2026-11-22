@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AccountComponent } from './account.component';
 import { CommonModule, Location as AppLocation } from '@angular/common';
@@ -8,104 +8,175 @@ import { filter, map } from 'rxjs';
 import { LangService } from './lang.service';
 import { HomeComponent } from './home.component';
 import type { HomeSearch } from './home.component';
-import { DoctorService, SPECIALTIES, GOVERNORATES } from './doctor.service';
+import { DoctorService, SPECIALTIES, GOVERNORATES, currentPosition } from './doctor.service';
 import type { Doctor } from './doctor.service';
 import { AuthService } from './auth.service';
-import { TriageChatComponent } from './triage-chat.component';
-import { FacilitiesComponent } from './facilities.component';
 
-type View = 'home' | 'doctors' | 'guide' | 'orientation' | 'facilities' | 'about' | 'account' | 'doctor';
-const PATHS: Record<Exclude<View, 'doctor'>, string> = {
-  home: '/', doctors: '/doctors', guide: '/guide',
-  orientation: '/orientation', facilities: '/lieux-de-sante', about: '/about', account: '/account',
-};
+/** Pages du site. Celles marquées « shell » sont dessinées ici ; les autres viennent du routeur (chargement à la demande). */
+const PATHS = {
+  home: '/', doctors: '/doctors', orientation: '/orientation', assistant: '/assistant', facilities: '/lieux-de-sante',
+  guide: '/guide', about: '/about', account: '/account', privacy: '/confidentialite', help: '/aide',
+} as const;
+type Page = keyof typeof PATHS;
+type View = Page | 'doctor' | 'other';
 
 function viewFromUrl(url: string): View {
   const path = url.split(/[?#]/)[0].replace(/^\/+|\/+$/g, '');
+  if (path === '') return 'home';
   if (path.startsWith('doctors/')) return 'doctor';
-  const hit = (Object.keys(PATHS) as (keyof typeof PATHS)[]).find((k) => PATHS[k].replace(/^\//, '') === path);
-  return hit ?? 'home';
+  if (path.startsWith('guide/')) return 'guide';
+  const hit = (Object.keys(PATHS) as Page[]).find((k) => PATHS[k].replace(/^\//, '') === path);
+  return hit ?? 'other';
 }
-@Component({ selector: 'app-root', standalone: true, imports: [CommonModule, FormsModule, AccountComponent, RouterOutlet, HomeComponent, TriageChatComponent, FacilitiesComponent], template: `
+
+@Component({ selector: 'app-root', standalone: true, imports: [CommonModule, FormsModule, AccountComponent, RouterOutlet, HomeComponent], template: `
   <div class="app-shell" [class.arabic-mode]="lang === 'ar'" [attr.dir]="lang === 'ar' ? 'rtl' : 'ltr'">
     <div class="emergency-strip"><span class="pulse"></span><span>{{ t('Besoin d’aide urgente ?','هل تحتاج مساعدة عاجلة؟') }}</span><span class="strip-separator">·</span><span>{{ t('SAMU','الإسعاف') }} <strong>190</strong></span><a href="tel:190">{{ t('Appeler','اتصل') }} <span aria-hidden="true">↗</span></a></div>
     <header class="site-header">
-      <a class="brand" href="#accueil" (click)="go('home')" aria-label="SehhaTN accueil"><span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a>
-      <nav class="main-nav" aria-label="Navigation principale"><button [class.active]="view==='home'" (click)="go('home')">{{ t('Accueil','الرئيسية') }}</button><button [class.active]="view==='doctors'" (click)="go('doctors')">{{ t('Médecins','الأطباء') }}</button><button [class.active]="view==='guide'" (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button><button [class.active]="view==='orientation'" (click)="go('orientation')">{{ t('Chat santé','مساعد صحي') }}</button><button [class.active]="view==='facilities'" (click)="go('facilities')">{{ t('Lieux de soins','مراكز الرعاية') }}</button><button [class.active]="view==='about'" (click)="go('about')">{{ t('À propos','من نحن') }}</button></nav>
-      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="account-pill" (click)="go('account')" [attr.aria-label]="auth.user() ? t('Mon compte', 'حسابي') : t('Se connecter ou créer un compte', 'تسجيل الدخول أو إنشاء حساب')"><span class="account-pill-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="account-pill-text">@if (auth.user(); as u) {<b>{{ firstName(u.name) }}</b><small>{{ t('Mon compte', 'حسابي') }}</small>} @else {<b>{{ t('Se connecter', 'تسجيل الدخول') }}</b><small>{{ t('ou créer un compte', 'أو إنشاء حساب') }}</small>}</span></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" aria-label="Menu">☰</button></div>
+      <a class="brand" href="#accueil" (click)="$event.preventDefault(); go('home')" aria-label="SehhaTN accueil"><span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a>
+      <nav class="main-nav" aria-label="Navigation principale">@for (n of nav; track n.page) { <button [class.active]="view===n.page" (click)="go(n.page)">{{ t(n.fr, n.ar) }}</button> }</nav>
+      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="account-pill" (click)="go('account')" [attr.aria-label]="auth.user() ? t('Mon compte', 'حسابي') : t('Se connecter ou créer un compte', 'تسجيل الدخول أو إنشاء حساب')"><span class="account-pill-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="account-pill-text">@if (auth.user(); as u) {<b>{{ firstName(u.name) }}</b><small>{{ t('Mon compte', 'حسابي') }}</small>} @else {<b>{{ t('Se connecter', 'تسجيل الدخول') }}</b><small>{{ t('ou créer un compte', 'أو إنشاء حساب') }}</small>}</span></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" [attr.aria-expanded]="mobileOpen" aria-label="Menu">☰</button></div>
     </header>
-    <nav class="mobile-nav" *ngIf="mobileOpen"><button (click)="go('home')">{{ t('Accueil','الرئيسية') }}</button><button (click)="go('doctors')">{{ t('Médecins','الأطباء') }}</button><button (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button><button (click)="go('orientation')">{{ t('Chat santé','مساعد صحي') }}</button><button (click)="go('facilities')">{{ t('Lieux de soins','مراكز الرعاية') }}</button><button (click)="go('about')">{{ t('À propos','من نحن') }}</button></nav>
+    <nav class="mobile-nav" *ngIf="mobileOpen">@for (n of nav; track n.page) { <button (click)="go(n.page)">{{ t(n.fr, n.ar) }}</button> }</nav>
 
     <main>
       <app-home *ngIf="view==='home'" (search)="homeSearch($event)"></app-home>
 
       <router-outlet />
-      <section class="page-section" *ngIf="view==='doctors'"><div class="page-intro"><div><span class="section-kicker">{{ t('ANNUAIRE MÉDICAL','دليل الأطباء') }}</span><h1>{{ t('Un médecin qui vous comprend.','طبيب يفهمك.') }}</h1><p>{{ t('Parcourez les profils vérifiés près de chez vous et choisissez en toute confiance.','استكشف الملفات الموثقة بالقرب منك واختر بثقة.') }}</p></div><div class="page-intro-icon">♧</div></div><div class="doctor-filters"><label class="filter-search"><span>⌕</span><input [(ngModel)]="searchText" [placeholder]="t('Nom, spécialité ou ville…','الاسم أو التخصص أو المدينة…')"></label><select [(ngModel)]="specialtyFilter"><option value="">{{ t('Toutes les spécialités','كل التخصصات') }}</option><option *ngFor="let s of specialties" [value]="s">{{ s }}</option></select><select [(ngModel)]="cityFilter"><option value="">{{ t('Tous les gouvernorats','كل الولايات') }}</option><option *ngFor="let c of cities" [value]="c">{{ c }}</option></select></div><p class="results-line">{{ filteredDoctors.length }} {{ t('professionnels trouvés','طبيب تم العثور عليهم') }} <span>·</span> {{ t('Tunisie','تونس') }}</p>@if (doctorService.loading()) {<p class="results-line">{{ t('Chargement des médecins… le premier chargement peut prendre jusqu’à une minute.','جارٍ تحميل الأطباء… قد يستغرق التحميل الأول حتى دقيقة.') }}</p>}@if (doctorService.error()) {<p class="results-line">{{ doctorService.error() }} <button class="outline-btn" (click)="doctorService.load()">{{ t('Réessayer','إعادة المحاولة') }}</button></p>}<div class="doctor-grid"><article class="doctor-card" *ngFor="let doctor of filteredDoctors"><div class="doctor-card-top"><div class="doctor-avatar" [style.background]="doctor.color">{{ doctor.initials }}<span class="avatar-online"></span></div><button class="favorite" (click)="toggleFavorite(doctor.name)" [class.saved]="favorites.includes(doctor.name)" [attr.aria-label]="'Favori ' + doctor.name">{{ favorites.includes(doctor.name) ? '♥' : '♡' }}</button></div>@if (doctor.verified) {<div class="verified-label"><span>✓</span> {{ t('PROFIL VÉRIFIÉ','ملف موثق') }}</div>}<h3>{{ doctor.name }}</h3><p class="doctor-specialty">{{ doctor.specialty }}</p><p class="doctor-place">⌖ &nbsp;{{ doctor.city }} <span>·</span> {{ t('Tunisie','تونس') }}</p><div class="doctor-rating">@if (doctor.reviews>0) {<b>★ {{ doctor.rating }}</b><span>{{ doctor.reviews }} {{ t('avis','آراء') }}</span>} @else {<span>{{ t('Pas encore d’avis','لا توجد آراء بعد') }}</span>}<span class="rating-spacer"></span>@if (doctor.next) {<small>{{ t('Dès','ابتداءً من') }} <b>{{ doctor.next }}</b></small>}</div><div class="doctor-card-actions"><button class="outline-btn" (click)="openDoctor(doctor)">{{ t('Voir le profil','عرض الملف') }}</button><button class="book-btn" (click)="openDoctor(doctor)">{{ t('Rendez-vous','موعد') }} ↗</button></div></article></div><div class="empty-state" *ngIf="filteredDoctors.length===0 && !doctorService.loading() && !doctorService.error()"><span>⌕</span><h3>{{ t('Aucun médecin ne correspond','لا يوجد طبيب مطابق') }}</h3><p>{{ t('Essayez une autre spécialité, ville ou recherche.','جرّب تخصصاً أو مدينة أو بحثاً مختلفاً.') }}</p><button class="outline-btn" (click)="resetFilters()">{{ t('Effacer les filtres','مسح المرشحات') }}</button></div></section>
-      <section class="page-section guide-page" *ngIf="view==='guide'"><div class="page-intro"><div><span class="section-kicker">{{ t('GUIDE SANTÉ','دليل الصحة') }}</span><h1>{{ t('Mieux comprendre, c’est déjà prendre soin.','الفهم بداية العناية.') }}</h1><p>{{ t('Une information claire et accessible pour mieux parler de votre santé avec un professionnel.','معلومات واضحة وميسرة لمساعدتك في التحدث مع المختص عن صحتك.') }}</p></div><div class="page-intro-icon">✚</div></div><label class="guide-search"><span>⌕</span><input [(ngModel)]="guideQuery" [placeholder]="t('Rechercher une maladie ou un symptôme…','ابحث عن مرض أو عرض…')"><span class="search-shortcut">⌘ K</span></label><div class="category-pills"><button *ngFor="let category of categories" [class.selected]="selectedCategory===category" (click)="selectedCategory=category">{{ category==='Tout' ? t('Tout','الكل') : category==='Cardiologie' ? t('Cardiologie','أمراض القلب') : category==='Bien-être' ? t('Bien-être','العافية') : category==='Santé courante' ? t('Santé courante','الصحة العامة') : category }}</button></div><div class="guide-grid"><article class="guide-card" *ngFor="let item of filteredArticles"><div class="article-art" [ngClass]="item.art"><img *ngIf="item.image" [src]="item.image" [alt]="item.imageAlt" loading="lazy" (error)="item.image=''"><span *ngIf="!item.image">{{ item.symbol }}</span><small>{{ item.category }}</small><a *ngIf="item.imageSource" [href]="item.imageSource" target="_blank" rel="noopener" (click)="$event.stopPropagation()">Unsplash ↗</a></div><div class="article-copy"><span class="article-time">{{ item.time }} {{ t('MIN DE LECTURE','دقائق للقراءة') }}</span><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><button (click)="openArticle(item)">{{ t('Lire le guide','اقرأ الدليل') }} <span>↗</span></button></div></article></div><div class="medical-note"><span>ⓘ</span><p><b>{{ t('Une information générale, jamais un diagnostic.','معلومات عامة وليست تشخيصاً.') }}</b><br>{{ t('Ces contenus vous aident à vous informer. Seul un professionnel de santé peut établir un diagnostic adapté à votre situation.','تساعدك هذه المحتويات على المعرفة. وحده المختص يمكنه تشخيص حالتك.') }}</p></div></section>
 
-      <section class="page-section orientation-page" *ngIf="view==='orientation'"><div class="orientation-shell chatbot-shell"><div class="orientation-top"><div><span class="section-kicker">{{ t('ORIENTATION SANTÉ','التوجيه الصحي') }}</span><h1>{{ t('Parlons de ce que vous ressentez.','لنتحدث عما تشعر به.') }}</h1></div><span class="chat-online"><i></i>{{ t('Assistant disponible','المساعد متاح') }}</span></div><p class="chat-intro">{{ t('Décrivez vos symptômes en quelques mots. Je vous poserai des questions pour vous orienter vers les bons soins.','صف أعراضك بكلمات قليلة. سأطرح عليك أسئلة لمساعدتك في الوصول إلى الرعاية المناسبة.') }}</p><app-triage-chat [lang]="lang" /></div></section>
+      <section class="page-section" *ngIf="view==='doctors'"><div class="page-intro"><div><span class="section-kicker">{{ t('ANNUAIRE MÉDICAL','دليل الأطباء') }}</span><h1>{{ t('Un médecin qui vous comprend.','طبيب يفهمك.') }}</h1><p>{{ t('Parcourez les profils vérifiés près de chez vous et choisissez en toute confiance.','استكشف الملفات الموثقة بالقرب منك واختر بثقة.') }}</p></div><div class="page-intro-icon">♧</div></div>
+        <div class="doctor-filters"><label class="filter-search"><span>⌕</span><input [(ngModel)]="searchText" [placeholder]="t('Nom, spécialité ou ville…','الاسم أو التخصص أو المدينة…')"></label><select [(ngModel)]="specialtyFilter"><option value="">{{ t('Toutes les spécialités','كل التخصصات') }}</option><option *ngFor="let s of specialties" [value]="s">{{ doctorService.specialtyLabel(s, lang) }}</option></select><select [(ngModel)]="cityFilter"><option value="">{{ t('Tous les gouvernorats','كل الولايات') }}</option><option *ngFor="let c of cities" [value]="c">{{ c }}</option></select></div>
+        <div class="dl-tools">
+          <button class="dl-near" [class.on]="!!doctorService.near()" (click)="toggleNear()" [disabled]="locating()">⌖ {{ locating() ? t('Localisation…','تحديد الموقع…') : doctorService.near() ? t('Près de moi ✓','بالقرب مني ✓') : t('Près de moi','بالقرب مني') }}</button>
+          <label class="dl-check"><input type="checkbox" [(ngModel)]="cnamOnly"> {{ t('Conventionné CNAM','متعاقد مع CNAM') }}</label>
+          <label class="dl-check"><input type="checkbox" [(ngModel)]="teleOnly"> {{ t('Téléconsultation','استشارة عن بعد') }}</label>
+          <select [(ngModel)]="sortBy" [attr.aria-label]="t('Trier','ترتيب')"><option value="default">{{ doctorService.near() ? t('Les plus proches','الأقرب') : t('Nom','الاسم') }}</option><option value="rating">{{ t('Mieux notés','الأعلى تقييماً') }}</option><option value="fee">{{ t('Tarif croissant','السعر تصاعدياً') }}</option><option value="experience">{{ t('Expérience','الخبرة') }}</option></select>
+        </div>
+        @if (geoError()) { <p class="results-line">{{ geoError() }}</p> }
+        <p class="results-line">{{ filteredDoctors.length }} {{ t('professionnels trouvés','مختصاً تم العثور عليهم') }} <span>·</span> {{ t('Tunisie','تونس') }}</p>@if (doctorService.loading()) {<p class="results-line">{{ t('Chargement des médecins… le premier chargement peut prendre jusqu’à une minute.','جارٍ تحميل الأطباء… قد يستغرق التحميل الأول حتى دقيقة.') }}</p>}@if (doctorService.error()) {<p class="results-line">{{ doctorService.error() }} <button class="outline-btn" (click)="doctorService.load()">{{ t('Réessayer','إعادة المحاولة') }}</button></p>}
+        <div class="doctor-grid"><article class="doctor-card" *ngFor="let doctor of visibleDoctors"><div class="doctor-card-top"><div class="doctor-avatar" [style.background]="doctor.color">@if (doctor.photo && !failedPhotos().has(doctor.id)) {<img class="dl-photo" [src]="doctor.photo" alt="" loading="lazy" (error)="photoFailed(doctor.id)">} @else { {{ doctor.initials }} }<span class="avatar-online"></span></div><button class="favorite" (click)="toggleFavorite(doctor.id)" [class.saved]="favorites().includes(doctor.id)" [attr.aria-label]="'Favori ' + doctor.name">{{ favorites().includes(doctor.id) ? '♥' : '♡' }}</button></div>@if (doctor.verified) {<div class="verified-label"><span>✓</span> {{ t('PROFIL VÉRIFIÉ','ملف موثق') }}</div>}<h3>{{ doctor.name }}</h3><p class="doctor-specialty">{{ doctorService.specialtyLabel(doctor.specialty, lang) }}</p><p class="doctor-place">⌖ &nbsp;{{ doctor.city }} <span>·</span> {{ doctor.distanceKm !== null ? formatKm(doctor.distanceKm) : t('Tunisie','تونس') }}</p><div class="doctor-rating">@if (doctor.reviews>0) {<b>★ {{ doctor.rating }}</b><span>{{ doctor.reviews }} {{ t('avis','آراء') }}</span>} @else {<span>{{ t('Pas encore d’avis','لا توجد آراء بعد') }}</span>}<span class="rating-spacer"></span>@if (doctor.consultationFee !== null) {<small><b>{{ doctor.consultationFee }} DT</b></small>}</div><div class="doctor-card-actions"><button class="outline-btn" (click)="openDoctor(doctor)">{{ t('Voir le profil','عرض الملف') }}</button><button class="book-btn" (click)="openDoctor(doctor)">{{ t('Rendez-vous','موعد') }} ↗</button></div></article></div>
+        @if (visibleDoctors.length < filteredDoctors.length) { <div class="dl-more"><button class="outline-btn" (click)="pageSize = pageSize + 24">{{ t('Afficher plus','عرض المزيد') }} ({{ filteredDoctors.length - visibleDoctors.length }})</button></div> }
+        <div class="empty-state" *ngIf="filteredDoctors.length===0 && !doctorService.loading() && !doctorService.error()"><span>⌕</span><h3>{{ t('Aucun médecin ne correspond','لا يوجد طبيب مطابق') }}</h3><p>{{ t('Essayez une autre spécialité, ville ou recherche.','جرّب تخصصاً أو مدينة أو بحثاً مختلفاً.') }}</p><button class="outline-btn" (click)="resetFilters()">{{ t('Effacer les filtres','مسح المرشحات') }}</button></div></section>
 
-      <app-facilities *ngIf="view==='facilities'" [lang]="lang"></app-facilities>
+      <section class="page-section about-page" *ngIf="view==='about'"><div class="about-cover"><span class="section-kicker">{{ t('NOTRE CONVICTION','قناعتنا') }}</span><h1>{{ t('Une santé plus accessible, partout en Tunisie.','صحة أكثر سهولة في كل تونس.') }}</h1><p>{{ t('SehhaTN rapproche les patients des professionnels de santé, avec des repères fiables et une expérience pensée pour chacun.','تقرب SehhaTN المرضى من المختصين بمعلومات موثوقة وتجربة تناسب الجميع.') }}</p><div class="tunisia-badge">✦ &nbsp; 24 {{ t('gouvernorats','ولاية') }}</div></div><div class="about-live-stats"><article><span>✚</span><strong>{{ stats()?.doctors ?? doctors.length }}</strong><small>{{ t('professionnels référencés','مختصاً مسجلاً') }}</small></article><article><span>⌖</span><strong>{{ stats()?.facilities ?? '—' }}</strong><small>{{ t('lieux de soins','مكان رعاية') }}</small></article><article><span>♡</span><strong>{{ stats()?.specialties ?? specialties.length }}</strong><small>{{ t('spécialités','تخصصاً') }}</small></article><article><span>★</span><strong>{{ stats()?.reviews ?? '—' }}</strong><small>{{ t('avis de patients','رأي مريض') }}</small></article></div><div class="about-actions"><button class="primary-btn" (click)="go('doctors')">{{ t('Découvrir les médecins','اكتشف الأطباء') }} →</button><button class="outline-btn" (click)="go('orientation')">{{ t('Être orienté','احصل على توجيه') }} ⌖</button></div><div class="about-values"><article><span>01</span><h3>{{ t('Proximité','القرب') }}</h3><p>{{ t('Rendre visibles les professionnels de toutes les régions.','إبراز المختصين في جميع المناطق.') }}</p></article><article><span>02</span><h3>{{ t('Confiance','الثقة') }}</h3><p>{{ t('Privilégier des informations utiles, claires et responsables.','تقديم معلومات واضحة ومسؤولة.') }}</p></article><article><span>03</span><h3>{{ t('Simplicité','البساطة') }}</h3><p>{{ t('Faciliter les premiers pas vers le soin, pour tous.','تسهيل الخطوات الأولى نحو الرعاية للجميع.') }}</p></article></div><div class="medical-note"><span>ⓘ</span><p><b>{{ t('SehhaTN est un outil d’information et d’orientation.','SehhaTN أداة للمعلومات والتوجيه.') }}</b><br>{{ t('Il ne remplace pas une consultation auprès d’un professionnel de santé.','ولا تحل محل استشارة المختص الصحي.') }}</p></div></section>
 
-      <section class="page-section about-page" *ngIf="view==='about'"><div class="about-cover"><span class="section-kicker">{{ t('NOTRE CONVICTION','قناعتنا') }}</span><h1>{{ t('Une santé plus accessible, partout en Tunisie.','صحة أكثر سهولة في كل تونس.') }}</h1><p>{{ t('SehhaTN rapproche les patients des professionnels de santé, avec des repères fiables et une expérience pensée pour chacun.','تقرب SehhaTN المرضى من المختصين بمعلومات موثوقة وتجربة تناسب الجميع.') }}</p><div class="tunisia-badge">✦ &nbsp; 24 {{ t('gouvernorats','ولاية') }}</div></div><div class="about-live-stats"><article><span>✚</span><strong>{{ doctors.length }}</strong><small>{{ t('médecins référencés','طبيب مسجل') }}</small></article><article><span>⌖</span><strong>{{ cities.length }}</strong><small>{{ t('gouvernorats couverts','ولاية مغطاة') }}</small></article><article><span>♡</span><strong>{{ specialties.length }}</strong><small>{{ t('spécialités recherchables','تخصصاً قابلاً للبحث') }}</small></article></div><div class="about-actions"><button class="primary-btn" (click)="go('doctors')">{{ t('Découvrir les médecins','اكتشف الأطباء') }} →</button><button class="outline-btn" (click)="go('facilities')">{{ t('Trouver un lieu de soins','ابحث عن مركز رعاية') }} ⌖</button></div><div class="about-values"><article><span>01</span><h3>{{ t('Proximité','القرب') }}</h3><p>{{ t('Rendre visibles les professionnels de toutes les régions.','إبراز المختصين في جميع المناطق.') }}</p></article><article><span>02</span><h3>{{ t('Confiance','الثقة') }}</h3><p>{{ t('Privilégier des informations utiles, claires et responsables.','تقديم معلومات واضحة ومسؤولة.') }}</p></article><article><span>03</span><h3>{{ t('Simplicité','البساطة') }}</h3><p>{{ t('Faciliter les premiers pas vers le soin, pour tous.','تسهيل الخطوات الأولى نحو الرعاية للجميع.') }}</p></article></div><div class="medical-note"><span>ⓘ</span><p><b>{{ t('SehhaTN est un outil d’information et d’orientation.','SehhaTN أداة للمعلومات والتوجيه.') }}</b><br>{{ t('Il ne remplace pas une consultation auprès d’un professionnel de santé.','ولا تحل محل استشارة المختص الصحي.') }}</p></div></section>
-
-            <section class="page-section account-page" *ngIf="view==='account'"><app-account [lang]="lang" /></section>
-
-      <section class="profile-overlay" *ngIf="selectedDoctor" (click)="selectedDoctor=null"><article class="profile-modal" (click)="$event.stopPropagation()"><button class="modal-close" (click)="selectedDoctor=null">×</button><div class="doctor-avatar large-avatar" [style.background]="selectedDoctor.color">{{ selectedDoctor.initials }}</div>@if (selectedDoctor.verified) {<div class="verified-label"><span>✓</span> {{ t('PROFIL VÉRIFIÉ','ملف موثق') }}</div>}<h2>{{ selectedDoctor.name }}</h2><p class="doctor-specialty">{{ selectedDoctor.specialty }}</p>@if (selectedDoctor.reviews>0) {<p>★ {{ selectedDoctor.rating }} · {{ selectedDoctor.reviews }} {{ t('avis de patients','avis de patients') }}</p>} @else {<p>{{ t('Pas encore d’avis','لا توجد آراء بعد') }}</p>}<div class="profile-info"><p>⌖ &nbsp;{{ selectedDoctor.address }}</p><p>☎ &nbsp;{{ selectedDoctor.phone }}</p>@if (selectedDoctor.schedule) {<p>◷ &nbsp;{{ selectedDoctor.schedule }}</p>}</div><button class="primary-btn" (click)="showToast(t('La prise de rendez-vous sera disponible prochainement.','سيكون حجز المواعيد متاحاً قريباً.'))">{{ t('Demander un rendez-vous','طلب موعد') }} →</button></article></section>
-      <section class="article-overlay" *ngIf="selectedArticle" (click)="selectedArticle=null"><article class="article-modal" (click)="$event.stopPropagation()"><button class="modal-close" (click)="selectedArticle=null">×</button><div class="article-modal-art" [ngClass]="selectedArticle.art"><img *ngIf="selectedArticle.image" [src]="selectedArticle.image" [alt]="selectedArticle.imageAlt"><span *ngIf="!selectedArticle.image">{{ selectedArticle.symbol }}</span></div><a *ngIf="selectedArticle.imageSource" class="article-photo-credit" [href]="selectedArticle.imageSource" target="_blank" rel="noopener">{{ t('Photo d’illustration · Unsplash','صورة توضيحية · Unsplash') }} ↗</a><span class="section-kicker">{{ selectedArticle.category }}</span><h2>{{ selectedArticle.title }}</h2><p class="article-modal-lede">{{ selectedArticle.summary }}</p><h3>{{ t('Ce qu’il faut savoir','ما تحتاج معرفته') }}</h3><p>{{ t('Chaque personne est différente. Les symptômes peuvent varier selon votre âge, votre histoire de santé et votre mode de vie. Notez ce que vous ressentez et depuis quand afin d’en parler avec un professionnel de santé.','كل شخص يختلف عن الآخر. قد تختلف الأعراض حسب العمر والتاريخ الصحي ونمط الحياة. دوّن ما تشعر به ومتى بدأ لتناقشه مع مختص صحي.') }}</p><h3>{{ t('Quand demander conseil ?','متى تطلب المشورة؟') }}</h3><p>{{ t('Si un symptôme vous inquiète, persiste ou s’aggrave, prenez rendez-vous avec un professionnel. En cas d’urgence, appelez le SAMU au 190.','إذا كان أحد الأعراض يقلقك أو استمر أو ازداد، احجز موعداً مع مختص. في حالة الطوارئ اتصل بالإسعاف على 190.') }}</p><div class="medical-note"><span>ⓘ</span><p>{{ t('Ces informations sont générales et ne remplacent pas un avis médical personnalisé.','هذه معلومات عامة ولا تحل محل الاستشارة الطبية الشخصية.') }}</p></div></article></section>
-      <div class="toast-message" *ngIf="toastMessage">{{ toastMessage }} <button (click)="toastMessage=''">×</button></div>
+      <section class="page-section account-page" *ngIf="view==='account'"><app-account [lang]="lang" /></section>
     </main>
-    <footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" (click)="go('home')"><span class="brand-mark"><svg viewBox="0 0 48 48"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a><p>{{ t('La santé, plus proche de vous.','الصحة أقرب إليك.') }}</p><div class="social-dots"><span>in</span><span>f</span><span>◎</span></div></div><div class="footer-column"><b>{{ t('EXPLORER','اكتشف') }}</b><button (click)="go('doctors')">{{ t('Trouver un médecin','ابحث عن طبيب') }}</button><button (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button><button (click)="go('orientation')">{{ t('Chat santé','مساعد صحي') }}</button><button (click)="go('facilities')">{{ t('Lieux de soins','مراكز الرعاية') }}</button></div><div class="footer-column"><b>{{ t('SEHHATN','SehhaTN') }}</b><button (click)="go('about')">{{ t('À propos','من نحن') }}</button><button (click)="showToast(t('Une page dédiée arrivera prochainement.','صفحة مخصصة ستتوفر قريباً.'))">{{ t('Aide & contact','المساعدة والتواصل') }}</button><button (click)="showToast(t('Politique disponible avec la mise en ligne du service.','ستتوفر السياسة عند إطلاق الخدمة.'))">{{ t('Confidentialité','الخصوصية') }}</button></div><div class="footer-emergency"><span>{{ t('BESOIN D’AIDE IMMÉDIATE ?','هل تحتاج مساعدة فورية؟') }}</span><b>{{ t('Les urgences médicales','الطوارئ الطبية') }}</b><a href="tel:190"><span>190</span><i>↗</i></a><small>{{ t('SAMU — appel gratuit en Tunisie','الإسعاف — مكالمة مجانية في تونس') }}</small></div></div><div class="footer-bottom"><span>© 2026 SehhaTN · {{ t('Fait avec soin, en Tunisie.','صنع بعناية في تونس.') }}</span><span>{{ t('Information santé à visée générale.','معلومات صحية عامة.') }} &nbsp; · &nbsp; FR &nbsp; · &nbsp; عربي</span></div></footer>
+    <footer class="site-footer"><div class="footer-main"><div class="footer-brand"><a class="brand" (click)="go('home')"><span class="brand-mark"><svg viewBox="0 0 48 48"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a><p>{{ t('La santé, plus proche de vous.','الصحة أقرب إليك.') }}</p></div><div class="footer-column"><b>{{ t('EXPLORER','اكتشف') }}</b><button (click)="go('doctors')">{{ t('Trouver un médecin','ابحث عن طبيب') }}</button><button (click)="go('orientation')">{{ t('Orientation guidée','التوجيه الموجه') }}</button><button (click)="go('assistant')">{{ t('Assistant santé','المساعد الصحي') }}</button><button (click)="go('facilities')">{{ t('Pharmacies & urgences','الصيدليات والاستعجالي') }}</button><button (click)="go('guide')">{{ t('Guide santé','دليل الصحة') }}</button></div><div class="footer-column"><b>{{ t('SEHHATN','SehhaTN') }}</b><button (click)="go('about')">{{ t('À propos','من نحن') }}</button><button (click)="go('help')">{{ t('Aide & contact','المساعدة والتواصل') }}</button><button (click)="go('privacy')">{{ t('Confidentialité','الخصوصية') }}</button><button (click)="go('account')">{{ t('Ma carte santé','بطاقتي الصحية') }}</button></div><div class="footer-emergency"><span>{{ t('BESOIN D’AIDE IMMÉDIATE ?','هل تحتاج مساعدة فورية؟') }}</span><b>{{ t('Les urgences médicales','الطوارئ الطبية') }}</b><a href="tel:190"><span>190</span><i>↗</i></a><small>{{ t('SAMU — appel gratuit en Tunisie','الإسعاف — مكالمة مجانية في تونس') }}</small></div></div><div class="footer-bottom"><span>© 2026 SehhaTN · {{ t('Fait avec soin, en Tunisie.','صنع بعناية في تونس.') }}</span><span>{{ t('Information santé à visée générale.','معلومات صحية عامة.') }} &nbsp; · &nbsp; FR &nbsp; · &nbsp; عربي</span></div></footer>
   </div>
-` })
+`, styles: [`
+  .dl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -4px 0 14px; }
+  .dl-near { border: 1px solid var(--line); background: #fff; color: var(--navy); border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px; }
+  .dl-near.on { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .dl-check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #455a6e; font-weight: 600; }
+  .dl-check input { accent-color: var(--teal); }
+  .dl-tools select { margin-inline-start: auto; height: 36px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background: #fff; }
+  .dl-photo { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+  .dl-more { display: flex; justify-content: center; margin-top: 20px; }
+  .dl-more button { padding: 10px 20px; border-radius: 12px; }
+`] })
 export class AppComponent {
   firstName(name: string) { return name.trim().split(/\s+/)[0]; }
-  mobileOpen = false; searchText = ''; specialtyFilter = ''; cityFilter = ''; guideQuery = ''; selectedCategory = 'Tout'; selectedSymptoms: string[] = []; orientationStep = 1; duration = ''; guidance: 'soon' | 'monitor' = 'monitor'; favorites: string[] = []; selectedDoctor: Doctor | null = null; selectedArticle: any = null; toastMessage = '';
-  specialties = SPECIALTIES; cities = GOVERNORATES; categories = ['Tout','Santé courante','Cardiologie','Bien-être']; durations = ['Depuis aujourd’hui','Depuis quelques jours','Depuis plusieurs semaines'];
+  mobileOpen = false; searchText = ''; specialtyFilter = ''; cityFilter = ''; cnamOnly = false; teleOnly = false;
+  sortBy: 'default' | 'rating' | 'fee' | 'experience' = 'default'; pageSize = 24;
+  specialties = SPECIALTIES; cities = GOVERNORATES;
+  readonly nav: { page: Page; fr: string; ar: string }[] = [
+    { page: 'home', fr: 'Accueil', ar: 'الرئيسية' }, { page: 'doctors', fr: 'Médecins', ar: 'الأطباء' },
+    { page: 'orientation', fr: 'Orientation', ar: 'التوجيه' }, { page: 'assistant', fr: 'Assistant santé', ar: 'المساعد الصحي' },
+    { page: 'facilities', fr: 'Lieux de soins', ar: 'مراكز الرعاية' }, { page: 'guide', fr: 'Guide santé', ar: 'دليل الصحة' },
+  ];
   doctorService = inject(DoctorService);
   auth = inject(AuthService);
   private router = inject(Router);
-langService = inject(LangService);
-private url = toSignal(
-  this.router.events.pipe(
-    filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-    map((e) => e.urlAfterRedirects)
-  ),
-  { initialValue: inject(AppLocation).path() }   // correct page on first paint for deep links
-);
-get view(): View { return viewFromUrl(this.url()); }
-get lang(): 'fr' | 'ar' { return this.langService.lang(); }
-set lang(v: 'fr' | 'ar') { this.langService.lang.set(v); }
+  langService = inject(LangService);
+  readonly locating = signal(false);
+  readonly geoError = signal('');
+  readonly failedPhotos = signal(new Set<number>());
+  readonly favorites = signal<number[]>(this.readFavorites());
+  readonly stats = signal<{ doctors: number; facilities: number; specialties: number; reviews: number } | null>(null);
+
+  private url = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => { this.applyQuery(e.urlAfterRedirects); return e.urlAfterRedirects; })
+    ),
+    { initialValue: inject(AppLocation).path() }   // correct page on first paint for deep links
+  );
+
+  constructor() {
+    this.applyQuery(inject(AppLocation).path());
+    this.auth.request<{ doctors: number; facilities: number; specialties: number; reviews: number }>('/meta/stats')
+      .then((s) => this.stats.set(s)).catch(() => {});
+  }
+
+  get view(): View { return viewFromUrl(this.url()); }
+  get lang(): 'fr' | 'ar' { return this.langService.lang(); }
+  set lang(v: 'fr' | 'ar') { this.langService.lang.set(v); }
   get doctors(): Doctor[] { return this.doctorService.doctors(); }
-  articles = [
-    {category:'Santé courante',title:'Comprendre sa tension artérielle',summary:'Les repères essentiels pour mieux comprendre la tension et en parler avec votre médecin.',time:'5',symbol:'⌁',art:'art-blue',image:'https://images.unsplash.com/photo-1758691461957-474a7686e388?auto=format&fit=crop&w=900&q=80',imageAlt:'Consultation entre un médecin et une patiente',imageSource:'https://unsplash.com/photos/doctor-consults-with-patient-in-modern-office-7-l5EL7YHI4'},
-    {category:'Cardiologie',title:'Prendre soin de son cœur au quotidien',summary:'De petits gestes réguliers peuvent soutenir votre santé cardiovasculaire.',time:'4',symbol:'♡',art:'art-coral',image:'https://images.unsplash.com/photo-1769029270661-b59a8a6270e7?auto=format&fit=crop&w=900&q=80',imageAlt:'Illustration de la santé cardiaque',imageSource:'https://unsplash.com/photos/woman-holding-her-chest-in-pain-ND9UsjyizaY'},
-    {category:'Bien-être',title:'Sommeil : retrouver un bon rythme',summary:'Quelques habitudes simples pour accompagner un sommeil plus régulier.',time:'6',symbol:'☾',art:'art-lilac',image:'https://images.unsplash.com/photo-1773298827579-2bfdf838762b?auto=format&fit=crop&w=900&q=80',imageAlt:'Personne endormie au calme',imageSource:'https://unsplash.com/photos/person-sleeping-under-white-fleece-blanket-j0fEhrSKytk'},
-    {category:'Santé courante',title:'La fièvre : quand consulter ?',summary:'Comment surveiller une fièvre et repérer les signes qui nécessitent un avis médical.',time:'5',symbol:'✳',art:'art-sand',image:'https://images.unsplash.com/photo-1758691461957-474a7686e388?auto=format&fit=crop&w=900&q=80',imageAlt:'Consultation avec un professionnel de santé',imageSource:'https://unsplash.com/photos/doctor-consults-with-patient-in-modern-office-7-l5EL7YHI4'},
-    {category:'Bien-être',title:'Bouger un peu, chaque jour',summary:'Une activité douce et régulière est un bon point de départ pour prendre soin de soi.',time:'3',symbol:'↗',art:'art-green',image:'https://images.unsplash.com/photo-1526718583451-e88ebf774771?auto=format&fit=crop&w=900&q=80',imageAlt:'Exercice physique doux',imageSource:'https://unsplash.com/photos/woman-doing-exercise-routine-Tq9Ln3gpiG4'},
-    {category:'Cardiologie',title:'Mieux comprendre le cholestérol',summary:'Ce que signifient les résultats et comment les interpréter avec un professionnel.',time:'7',symbol:'◉',art:'art-blue',image:'https://images.unsplash.com/photo-1758691461957-474a7686e388?auto=format&fit=crop&w=900&q=80',imageAlt:'Consultation médicale',imageSource:'https://unsplash.com/photos/doctor-consults-with-patient-in-modern-office-7-l5EL7YHI4'}
-  ];
-  symptoms = [{key:'head',icon:'☼',fr:'Maux de tête',ar:'صداع'},{key:'stomach',icon:'♡',fr:'Douleur au ventre',ar:'ألم في البطن'},{key:'fever',icon:'♨',fr:'Fièvre ou fatigue',ar:'حمى أو إرهاق'},{key:'skin',icon:'✳',fr:'Peau ou allergie',ar:'الجلد أو الحساسية'},{key:'breathing',icon:'⌁',fr:'Respiration',ar:'التنفس'},{key:'other',icon:'＋',fr:'Autre chose',ar:'شيء آخر'}];
-  get filteredDoctors(): Doctor[] { const q=this.searchText.toLowerCase().trim(); return this.doctors.filter(d=>(!q||`${d.name} ${d.specialty} ${d.city}`.toLowerCase().includes(q))&&(!this.specialtyFilter||d.specialty===this.specialtyFilter)&&(!this.cityFilter||d.governorate===this.cityFilter)); }
-  get filteredArticles() { const q=this.guideQuery.toLowerCase().trim(); return this.articles.filter(a=>(this.selectedCategory==='Tout'||a.category===this.selectedCategory)&&(!q||`${a.title} ${a.summary} ${a.category}`.toLowerCase().includes(q))); }
+
+  get filteredDoctors(): Doctor[] {
+    const q = this.fold(this.searchText);
+    const list = this.doctors.filter((d) => (!q || this.fold(`${d.name} ${d.specialty} ${d.city} ${d.governorate}`).includes(q))
+      && (!this.specialtyFilter || d.specialty === this.specialtyFilter)
+      && (!this.cityFilter || d.governorate === this.cityFilter)
+      && (!this.cnamOnly || d.acceptsCnam === true)
+      && (!this.teleOnly || d.teleconsultation));
+    const by = this.sortBy;
+    if (by === 'rating') return [...list].sort((a, b) => this.score(b) - this.score(a));
+    if (by === 'fee') return [...list].sort((a, b) => (a.consultationFee ?? 1e9) - (b.consultationFee ?? 1e9));
+    if (by === 'experience') return [...list].sort((a, b) => (b.yearsExperience ?? -1) - (a.yearsExperience ?? -1));
+    return list;
+  }
+  get visibleDoctors(): Doctor[] { return this.filteredDoctors.slice(0, this.pageSize); }
+  /** Moyenne bayésienne : peu d'avis = note tirée vers 4. */
+  private score(d: Doctor) { return (d.rating * d.reviews + 4 * 5) / (d.reviews + 5); }
+  private fold(s: string) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
+
   t(fr: string, ar: string): string { return this.lang==='fr' ? fr : ar; }
-  go(view: Exclude<View, 'doctor'>) {
-  this.mobileOpen = false;
-  this.selectedArticle = null;
-  this.selectedDoctor = null;
-  this.router.navigateByUrl(PATHS[view]);
-}
-  toggleLanguage() { this.lang=this.lang==='fr'?'ar':'fr'; document.documentElement.lang=this.lang; }
-  homeSearch(f: HomeSearch) { this.specialtyFilter=f.specialty??''; this.cityFilter=f.governorate??''; this.searchText=f.name??''; this.go('doctors'); }
-  quickSearch(q: string) { this.searchText=q; this.go('doctors'); }
-  toggleFavorite(name: string) { this.favorites=this.favorites.includes(name)?this.favorites.filter(n=>n!==name):[...this.favorites,name]; }
+  go(page: Page) {
+    this.mobileOpen = false;
+    this.router.navigateByUrl(PATHS[page]);
+  }
+  toggleLanguage() { this.lang=this.lang==='fr'?'ar':'fr'; document.documentElement.lang=this.lang; document.documentElement.dir = this.lang === 'ar' ? 'rtl' : 'ltr'; }
+  homeSearch(f: HomeSearch) {
+    this.router.navigate(['/doctors'], { queryParams: { specialty: f.specialty || null, governorate: f.governorate || null, q: f.name || null } });
+  }
   openDoctor(d: Doctor) { this.router.navigate(['/doctors', d.id]); }
-  openArticle(a: any) { this.selectedArticle=a; }
-  resetFilters() { this.searchText=''; this.specialtyFilter=''; this.cityFilter=''; }
-  toggleSymptom(key: string) { this.selectedSymptoms=this.selectedSymptoms.includes(key)?this.selectedSymptoms.filter(s=>s!==key):[...this.selectedSymptoms,key]; }
-  durationIcon(d: string) { return d.startsWith('Depuis aujourd')?'◷':d.includes('jours')?'◷':'◴'; }
-  durationArabic(d: string) { return d.startsWith('Depuis aujourd')?'منذ اليوم':d.includes('jours')?'منذ بضعة أيام':'منذ عدة أسابيع'; }
-  getGuidance() { this.guidance=this.selectedSymptoms.includes('breathing')||this.duration==='Depuis plusieurs semaines'?'soon':'monitor'; this.orientationStep=3; }
-  resetOrientation() { this.selectedSymptoms=[]; this.duration=''; this.orientationStep=1; }
-  showToast(msg: string) { this.toastMessage=msg; window.setTimeout(()=>this.toastMessage='',3600); }
+  resetFilters() { this.searchText=''; this.specialtyFilter=''; this.cityFilter=''; this.cnamOnly=false; this.teleOnly=false; }
+  formatKm(k: number) { return k < 1 ? `${Math.round(k * 1000)} m` : `${k.toFixed(1)} km`; }
+  photoFailed(id: number) { this.failedPhotos.update((s) => new Set(s).add(id)); }
+
+  /** /doctors?specialty=…&governorate=…&q=… : filtres venant de l'accueil, du guide ou d'une orientation. */
+  private applyQuery(url: string) {
+    if (viewFromUrl(url) !== 'doctors') return;
+    const qp = this.router.parseUrl(url).queryParams;
+    if (!('specialty' in qp || 'governorate' in qp || 'q' in qp)) return;
+    this.specialtyFilter = qp['specialty'] ?? '';
+    this.cityFilter = qp['governorate'] ?? '';
+    this.searchText = qp['q'] ?? '';
+    this.pageSize = 24;
+  }
+
+  async toggleNear() {
+    this.geoError.set('');
+    if (this.doctorService.near()) { await this.doctorService.load(null); return; }
+    this.locating.set(true);
+    try {
+      await this.doctorService.load(await currentPosition());
+      this.sortBy = 'default';
+    } catch (e) {
+      this.geoError.set(e instanceof Error && e.message === 'denied'
+        ? this.t('Accès à la position refusé : autorisez-le dans le navigateur ou filtrez par gouvernorat.', 'تم رفض الوصول إلى الموقع: اسمح به في المتصفح أو استعمل مرشح الولاية.')
+        : this.t('Position indisponible pour le moment.', 'الموقع غير متاح حالياً.'));
+    } finally { this.locating.set(false); }
+  }
+
+  toggleFavorite(id: number) {
+    this.favorites.update((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
+    try { localStorage.setItem('sehhatn_favorites', JSON.stringify(this.favorites())); } catch { /* stockage indisponible */ }
+  }
+  private readFavorites(): number[] {
+    try { const v = JSON.parse(localStorage.getItem('sehhatn_favorites') ?? '[]'); return Array.isArray(v) ? v.filter(Number.isInteger) : []; }
+    catch { return []; }
+  }
 }
