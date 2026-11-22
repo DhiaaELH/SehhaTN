@@ -1,12 +1,14 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import type { Doctor } from './doctor.service';
 import { SlotPickerComponent } from './slot-picker.component';
+import { MapComponent, MapMarker } from './map.component';
+import { DoctorReviewsComponent } from './doctor-reviews.component';
 
 /** Page de profil d'un médecin. */
 @Component({
   selector: 'app-doctor-page',
   standalone: true,
-  imports: [SlotPickerComponent],
+  imports: [SlotPickerComponent, MapComponent, DoctorReviewsComponent],
   styles: [`
     :host { display: block; }
     .dp-back { border: 0; background: none; color: var(--navy); font-weight: 700; font-size: 12px; cursor: pointer; padding: 6px 0; margin-bottom: 14px; }
@@ -84,6 +86,15 @@ import { SlotPickerComponent } from './slot-picker.component';
     .dp-address a:hover { text-decoration: underline; }
     .dp-address b { display: block; color: var(--deep); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
 
+    .dp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+    .dp-rating { margin-inline-start: 10px; color: #ffd27a; font-weight: 700; }
+    .dp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .dp-tags span { padding: 6px 12px; border-radius: 999px; background: #e7f5f4; color: #07707b; font-weight: 600; font-size: 12px; }
+    .dp-edu { margin: 0; padding-inline-start: 18px; color: #3b4d61; font-size: 13px; line-height: 1.7; }
+    .dp-mt { margin-top: 20px !important; }
+    .dp-map { margin-top: 4px; }
+    .dp-approx { color: var(--muted); font-size: 11px; }
+    .dp-demo { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: #f3f4f6; color: #4b5563; font-size: 11px; line-height: 1.5; }
     /* ---------- apparition douce ---------- */
     .dp-rise { animation: rise .6s ease both; }
     .dp-d1 { animation-delay: .05s; } .dp-d2 { animation-delay: .15s; } .dp-d3 { animation-delay: .25s; } .dp-d4 { animation-delay: .35s; }
@@ -109,16 +120,21 @@ import { SlotPickerComponent } from './slot-picker.component';
           <path pathLength="1" d="M0 74 H250 L282 74 L302 24 L330 110 L354 46 L372 74 H800" />
         </svg>
         <div class="dp-hero-main">
-          <div class="dp-avatar" [style.--tint]="doctor().color"><span>{{ doctor().initials }}</span></div>
+          <div class="dp-avatar" [style.--tint]="doctor().color">
+            @if (doctor().photo && !photoFailed()) { <img [src]="doctor().photo" [alt]="doctor().name" (error)="photoFailed.set(true)"> }
+            @else { <span>{{ doctor().initials }}</span> }
+          </div>
           <div>
             @if (doctor().verified) {
               <span class="dp-chip dp-chip-ok">✓ {{ t('Profil vérifié', 'ملف موثق') }}</span>
             } @else {
               <span class="dp-chip">{{ t('Profil en attente de vérification', 'ملف قيد التحقق') }}</span>
             }
+            @if (doctor().teleconsultation) { <span class="dp-chip">◉ {{ t('Téléconsultation', 'استشارة عن بعد') }}</span> }
             <h1>{{ doctor().name }}</h1>
             <p class="dp-spec">{{ doctor().specialty }}</p>
-            <p class="dp-place">⌖ {{ doctor().city }}, {{ doctor().governorate }} · {{ t('Tunisie', 'تونس') }}</p>
+            <p class="dp-place">⌖ {{ doctor().city }}, {{ doctor().governorate }} · {{ t('Tunisie', 'تونس') }}
+              @if (doctor().reviews) { <span class="dp-rating">★ {{ doctor().rating }} · {{ doctor().reviews }} {{ t('avis', 'رأي') }}</span> }</p>
           </div>
         </div>
       </div>
@@ -162,7 +178,20 @@ import { SlotPickerComponent } from './slot-picker.component';
               </div>
             }
           </article>
-    
+
+          @if (doctor().education.length || doctor().services.length) {
+            <article class="dp-card dp-rise dp-d2">
+              @if (doctor().services.length) {
+                <h2>{{ t('Actes et soins', 'الخدمات والعلاجات') }}</h2>
+                <div class="dp-tags">@for (sv of doctor().services; track sv) { <span>{{ sv }}</span> }</div>
+              }
+              @if (doctor().education.length) {
+                <h2 [class.dp-mt]="doctor().services.length">{{ t('Formation', 'التكوين') }}</h2>
+                <ul class="dp-edu">@for (e of doctor().education; track e) { <li>{{ e }}</li> }</ul>
+              }
+            </article>
+          }
+
                   <app-slot-picker #picker id="rdv" class="dp-rise dp-d3" [style.display]="booking() ? null : 'none'"
                  [doctorId]="doctor().id" [lang]="lang()" (closed)="booking.set(false)" />
 
@@ -183,16 +212,7 @@ import { SlotPickerComponent } from './slot-picker.component';
         }
 
 
-          <article class="dp-card dp-rise dp-d4">
-            <h2>{{ t('Avis des patients', 'آراء المرضى') }}</h2>
-            <div class="dp-empty">
-              <span class="dp-stars" aria-hidden="true">★★★★★</span>
-              <div>
-                <strong>{{ t('Pas encore d’avis', 'لا توجد آراء بعد') }}</strong>
-                <p>{{ t('Les patients connectés pourront bientôt partager leur expérience, un avis par médecin.', 'سيتمكن المرضى المسجلون قريباً من مشاركة تجربتهم، رأي واحد لكل طبيب.') }}</p>
-              </div>
-            </div>
-          </article>
+          <app-doctor-reviews class="dp-rise dp-d4" [doctorId]="doctor().id" [lang]="lang()" />
         </div>
 
         <aside class="dp-side dp-rise dp-d2">
@@ -217,7 +237,14 @@ import { SlotPickerComponent } from './slot-picker.component';
               {{ doctor().address }}
               <a [href]="mapsUrl()" target="_blank" rel="noopener noreferrer">{{ t('Voir l’itinéraire ↗', 'عرض الطريق ↗') }}</a>
             </p>
+            @if (marker(); as m) {
+              <app-map class="dp-map" [markers]="[m]" [zoom]="15" height="220px" [label]="t('Localisation du cabinet', 'موقع العيادة')" />
+              @if (!doctor().locationPrecise) { <small class="dp-approx">{{ t('Position approximative (centre de la ville).', 'موقع تقريبي (وسط المدينة).') }}</small> }
+            }
           </div>
+          @if (doctor().isDemo) {
+            <p class="dp-demo">ⓘ {{ t('Profil de démonstration : les informations de ce praticien sont fictives.', 'ملف تجريبي: معلومات هذا المختص وهمية.') }}</p>
+          }
         </aside>
       </div>
     </div>
@@ -246,8 +273,18 @@ openBooking() {
     return digits ? 'tel:' + digits : '';
   });
 
+  readonly photoFailed = signal(false);
+
+  readonly marker = computed<MapMarker | null>(() => {
+    const d = this.doctor();
+    return d.lat !== null && d.lng !== null
+      ? { id: d.id, lat: d.lat, lng: d.lng, kind: 'doctor', title: d.name, subtitle: d.address, href: this.mapsUrl(), hrefLabel: this.t('Itinéraire', 'الاتجاهات') }
+      : null;
+  });
+
   readonly mapsUrl = computed(() => {
     const d = this.doctor();
+    if (d.lat !== null && d.lng !== null) return `https://www.google.com/maps/dir/?api=1&destination=${d.lat},${d.lng}`;
     const query = [d.address, d.city, 'Tunisie'].filter(Boolean).join(', ');
     return 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(query);
   });

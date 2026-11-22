@@ -38,35 +38,47 @@ Cliquez sur une image pour l'agrandir.
 ## Fonctionnalités
 
 ### Visiteur
-- **Accueil** : carte du corps interactive (face et dos) qui oriente vers les bonnes spécialités, recherche par spécialité, gouvernorat et nom
-- **Actualités santé** : articles récents de flux RSS officiels (OMS), mis en cache côté serveur
-- **Annuaire** : médecins réels inscrits sur le site, avec filtres
-- **Profil médecin** : page dédiée avec tarif, langues, CNAM, adresse, badge de profil vérifié et créneaux libres
-- **Guide santé** et **chat d’orientation** en français et en arabe : questions de clarification, repérage prudent de quelques signes d’urgence et conseils généraux
-- **Lieux de soins** : recherche de pharmacies, cliniques et hôpitaux par ville en Tunisie, tri par proximité, fiche détaillée et itinéraire
-- **Bilingue** français et arabe (affichage de droite à gauche), adapté au mobile
+- **Accueil** : carte du corps interactive, recherche par spécialité / gouvernorat / nom, accès rapides (orientation, assistant, pharmacie de nuit, urgences), toutes les spécialités et les praticiens les mieux notés
+- **Annuaire** : 21 spécialités, filtres (spécialité, gouvernorat, CNAM, téléconsultation), tri par note, tarif, expérience ou **proximité (« Près de moi »)**
+- **Profil médecin** : photo, tarif, langues, CNAM, actes et formation, **carte de localisation du cabinet**, itinéraire, créneaux libres et **avis vérifiés** (note moyenne, répartition, réponse du praticien)
+- **Orientation guidée** (`/orientation`) : quelques questions pour savoir s'il faut appeler le SAMU, aller aux urgences, consulter aujourd'hui, prendre rendez-vous ou demander conseil au pharmacien — et quel spécialiste consulter
+- **Assistant santé** (`/assistant`) : l'utilisateur décrit ses symptômes avec ses mots (français, arabe ou derja) ; l'assistant pose les questions utiles puis donne des conseils ou oriente vers un médecin
+- **Lieux de soins** (`/lieux-de-sante`) : pharmacies, **pharmacies de nuit**, urgences et hôpitaux, cliniques, laboratoires, radiologie et centres de santé **autour de moi** (géolocalisation) ou d'une ville, sur carte et triés par distance
+- **Guide santé** (`/guide`) : 32 fiches (symptômes, gestes utiles, quand consulter, prévention)
+- **Aide & contact** (`/aide`) : FAQ, numéros d'urgence, formulaire de contact
+- **Confidentialité** (`/confidentialite`) : politique complète (loi organique n° 2004-63, INPDP)
+- **Actualités santé** (flux RSS de l'OMS) et site **bilingue** français / arabe
 
 ### Patient
-- **Compte** : inscription et connexion
-- **Réservation** : choix d'un jour et d'un créneau libre, note facultative
-- **Mes rendez-vous** : suivi des statuts et annulation
+- Compte, réservation, suivi et annulation des rendez-vous
+- **Carte santé** : groupe sanguin, allergies, antécédents, traitements, vaccins, contacts d'urgence, CNAM
+  - partage facultatif avec les médecins chez qui le patient a un rendez-vous
+  - **fiche d'urgence** par lien secret et QR code (données minimales, révocable)
+  - historique de qui a consulté la carte
+- **Avis** sur un praticien consulté via SehhaTN
+- **Télécharger mes données** et **supprimer mon compte**
 
 ### Médecin
-- **Fiche professionnelle** : création et modification, visible dans l'annuaire
-- **Horaires** : plages par jour et durée de consultation (15 à 60 minutes)
-- **Rendez-vous** : consultation, annulation, marquage terminé ou absent
+- Fiche professionnelle (position calculée à partir de l'adresse), horaires, rendez-vous
+- Consultation de la carte santé des patients qui l'ont partagée, réponse aux avis
 
-### Règles de réservation
-- Heure de Tunis, au moins 2 h à l'avance et jusqu'à 30 jours
-- Un seul rendez-vous à venir par patient et par médecin
-- Annulation possible jusqu'au début du rendez-vous
+### Méthode d'orientation
+Le même moteur (`backend/lib/triage.js`) sert l'orientation guidée et l'assistant. Il suit une échelle de 6 niveaux de soins : soins à domicile → pharmacien → consultation sous quelques jours → consulter aujourd'hui → urgences → SAMU 190.
+1. **Signes d'alerte d'abord** : un seul signe vital (douleur thoracique oppressante, signes d'AVC, détresse respiratoire, idées suicidaires…) mène directement au 190 ou aux urgences.
+2. **Niveau de départ** : celui du symptôme le plus sérieux (base de connaissances : 50 symptômes, 30 signes d'alerte, 32 affections).
+3. **Modulateurs** : intensité, durée, nourrisson, personne âgée, grossesse. Sans signe d'alerte, on ne dépasse jamais « consulter aujourd'hui ».
+4. **Spécialité** : celle du symptôme principal, ajustée (enfant → pédiatre, grossesse → gynécologue, plusieurs systèmes → généraliste), avec des praticiens proposés.
+5. **Pistes** : affections partageant le plus de symptômes, présentées comme des sujets à évoquer avec un médecin, jamais comme un diagnostic.
+
+Aucune donnée n'est envoyée à un service d'IA ; les réponses sont déterministes et couvertes par des tests.
 
 ### Sécurité
 - **Aucune double réservation** possible, garantie par la base de données
-- **Mots de passe chiffrés**, sessions par jeton et accès limité selon le rôle (patient, médecin, admin)
-- **Vie privée** : les patients ne voient jamais l'identité des autres
+- **Mots de passe chiffrés**, sessions par jeton, accès limité selon le rôle
+- En-têtes de sécurité (helmet), **CORS en liste blanche**, **limitation de débit** (connexion, contact, assistant), validation stricte de toutes les entrées
+- **Vie privée** : les patients ne voient jamais l'identité des autres ; les avis affichent un nom abrégé ; chaque accès à une carte santé est journalisé
 
-Le chat d’orientation fonctionne sans transmettre les symptômes à un service d’IA. Il ne pose pas de diagnostic et rappelle d’appeler le SAMU au 190 en cas de signe urgent. Les lieux de soins viennent d’OpenStreetMap via Nominatim et Overpass ; la couverture, les photos, les horaires et les coordonnées dépendent des contributions cartographiques et peuvent être incomplets. La recherche par ville transmet le nom de la ville saisie aux services cartographiques. La page ne demande pas la position GPS.
+Les lieux de soins combinent l'annuaire SehhaTN et les données ouvertes d'OpenStreetMap (Overpass / Nominatim, appelés par le serveur avec cache et repli). La position de l'utilisateur n'est demandée que sur action de sa part et n'est pas enregistrée.
 
 ## Architecture
 
@@ -108,12 +120,22 @@ JWT_SECRET=une-longue-phrase-aleatoire
 # NEWS_FEEDS=https://exemple.org/flux.xml
 ```
 
-Créer les tables et lancer l’API (dans un premier terminal, après avoir configuré `backend/.env`) :
+Créer les tables, remplir la base et lancer l’API (dans un premier terminal, après avoir configuré `backend/.env`) :
 
 ```bash
-npm run db:init
+npm run db:seed          # schéma + spécialités + base de connaissances + données de démonstration
 npm run start:backend
 ```
+
+`npm run db:seed` est idempotent (on peut le relancer). Variantes, depuis `backend/` :
+
+| Commande | Effet |
+|---|---|
+| `npm run db:seed:prod` | schéma + référentiels, **sans** données de démonstration |
+| `npm run db:remove-demo` | supprime toutes les données de démonstration |
+| `npm test` | tests du moteur d'orientation et de l'API (base de données requise) |
+
+**Données de démonstration** : 99 praticiens fictifs (21 spécialités, 24 gouvernorats), environ 600 avis, 400 lieux de soins, avec photos. Elles sont marquées `is_demo` et signalées « Démo » sur le site. Sur un site utilisé par de vrais patients, définir `HIDE_DEMO_DATA=true` (ou lancer `db:remove-demo`). Pour créer les comptes de démonstration `patient@demo.sehhatn.tn` et `medecin@demo.sehhatn.tn`, définir `SEED_DEMO_PASSWORD` avant le seed.
 
 Dans un second terminal, toujours à la racine, lancer le site Angular :
 
@@ -131,11 +153,12 @@ Le badge « profil vérifié » s'active en passant `verified` à `true` dans la
 
 ## Feuille de route
 
-- Avis des patients avec modération et réponse du médecin
 - Messagerie entre patient et médecin
-- Assistant d'orientation par IA (bloc « Consultation rapide »)
-- Espace administrateur pour valider les médecins
-- Rappels de rendez-vous par e-mail ou SMS
+- Espace administrateur (validation des médecins, modération des avis, messages de contact)
+- Rappels de rendez-vous par e-mail ou SMS, réinitialisation du mot de passe par e-mail
+- Pharmacies de garde à jour (calendrier officiel des gardes)
+- Ordonnances et comptes rendus dans la carte santé, téléconsultation vidéo
+- Option : reformulation des réponses de l'assistant par un modèle d'IA, après les règles de sécurité
 
 ## Contribuer
 

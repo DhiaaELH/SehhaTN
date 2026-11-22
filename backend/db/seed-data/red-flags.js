@@ -1,0 +1,356 @@
+/** Signes d'alerte. Vérifiés en premier par l'orientation guidée et par l'assistant.
+ *  level : 3 = consulter aujourd'hui, 4 = urgences hospitalières, 5 = appeler le SAMU (190).
+ *  patterns : texte normalisé (minuscules, sans accents ni diacritiques arabes) — français, arabe, darija. */
+module.exports = [
+  // ===================== Signes globaux (SAMU 190) =====================
+  {
+    key: 'chest_pain_severe', level: 5, is_global: true,
+    question_fr: 'Avez-vous une douleur forte ou oppressante dans la poitrine, qui peut irradier vers le bras, la mâchoire ou le dos, avec des sueurs ou un malaise ?',
+    question_ar: 'هل تشعر بألم قوي أو ضاغط في الصدر قد يمتد إلى الذراع أو الفك أو الظهر، مع تعرق أو توعك؟',
+    patterns: [
+      
+      'poitrine qui serre', 'serrement dans la poitrine', 'oppression thoracique', 'poids sur la poitrine', 'etau dans la poitrine',
+      'mal au coeur et au bras', 'douleur qui descend dans le bras', 'crise cardiaque', 'infarctus',
+      'الم شديد في الصدر', 'نوبة قلبية', 'جلطة قلبية',
+      'sadri yougef', 'sadri ma3fous', 'douleur thoracique intense', 'douleur intense dans la poitrine', 'tres mal a la poitrine', 'douleur dans la poitrine et le bras'],
+    advice_fr: 'Une douleur forte ou oppressante dans la poitrine peut être un infarctus. Appelez le 190 immédiatement, arrêtez tout effort, asseyez-vous ou allongez-vous et ne conduisez pas.',
+    advice_ar: 'قد يكون الألم القوي أو الضاغط في الصدر نوبة قلبية. اتصل بالرقم 190 فوراً، وتوقف عن أي مجهود، واجلس أو استلقِ ولا تقد السيارة.',
+  },
+  {
+    key: 'breathing_severe', level: 5, is_global: true,
+    question_fr: 'Avez-vous beaucoup de mal à respirer, au point de ne pas pouvoir parler, ou les lèvres bleutées ?',
+    question_ar: 'هل تجد صعوبة كبيرة في التنفس لدرجة عدم القدرة على الكلام، أو هل الشفتان مائلتان إلى الزرقة؟',
+    patterns: [
+      'du mal a respirer', 'mal a respirer', 'difficulte a respirer', 'difficultes a respirer', 'je n arrive pas a respirer',
+      'je n arrive plus a respirer', 'je ne peux pas respirer', 'je ne peux plus respirer', 'respire plus', 'j etouffe', 'etouffement',
+      'suffoque', 'manque d air', 'levres bleues', 'levres bleutees', 'essoufflement important', 'detresse respiratoire',
+      'صعوبة في التنفس', 'صعوبة التنفس', 'لا استطيع التنفس', 'ما نقدرش نتنفس', 'اختناق', 'ضيق تنفس شديد', 'شفاه زرقاء',
+      'ma nnajjamch nitnaffes', 'ma najemch netnafes', 'manajemch netnafes', 'mani9derch nitnaffes', 'nefsi mgata3', 'mkhnou9',
+    ],
+    advice_fr: 'Une difficulté respiratoire importante est une urgence. Appelez le 190, restez assis légèrement penché en avant, desserrez les vêtements et utilisez votre traitement de secours habituel si vous en avez un.',
+    advice_ar: 'صعوبة التنفس الشديدة حالة طارئة. اتصل بالرقم 190، واجلس مائلاً قليلاً إلى الأمام، وفك الملابس الضيقة، واستعمل دواءك الإسعافي المعتاد إن وُجد.',
+  },
+  {
+    key: 'unconscious', level: 5, is_global: true,
+    question_fr: 'La personne a-t-elle perdu connaissance, ou ne répond-elle plus normalement ?',
+    question_ar: 'هل فقد الشخص وعيه، أو لم يعد يستجيب بشكل طبيعي؟',
+    patterns: [
+      'perte de connaissance', 'perdu connaissance', 'evanoui', 'evanouie', 'evanouissement', 'inconscient', 'inconsciente',
+      'ne repond plus', 'ne se reveille pas', 'tombe dans les pommes', 'syncope',
+      'فقدان الوعي', 'فقد الوعي', 'فاقد الوعي', 'اغماء', 'مغمى عليه', 'لا يستجيب', 'طاح ومافاقش',
+      'ghma 3lih', 'ghma 3liha', 'tah w ma fe9ech', 'ma ywejebch', 'fa9ed el wa3y',
+    ],
+    advice_fr: 'Appelez le 190 immédiatement. Si la personne respire, placez-la sur le côté (position latérale de sécurité) et surveillez sa respiration jusqu’à l’arrivée des secours.',
+    advice_ar: 'اتصل بالرقم 190 فوراً. إذا كان الشخص يتنفس، ضعه على جانبه (وضعية الأمان) وراقب تنفسه حتى وصول الإسعاف.',
+  },
+  {
+    key: 'stroke_signs', level: 5, is_global: true,
+    question_fr: 'Avez-vous remarqué brutalement une bouche déformée, une faiblesse d’un bras ou d’une jambe, ou une difficulté à parler ?',
+    question_ar: 'هل لاحظت فجأة انحراف الفم، أو ضعفاً في ذراع أو ساق، أو صعوبة في الكلام؟',
+    patterns: [
+      'bouche deformee', 'visage deforme', 'visage paralyse', 'paralysie', 'paralyse', 'bras qui ne bouge plus', 'bras paralyse',
+      'jambe paralysee', 'n arrive plus a parler', 'difficulte a parler', 'parole bizarre', 'trouble de la parole', 'avc',
+      'accident vasculaire', 'attaque cerebrale',
+      'شلل', 'شلل مفاجئ', 'انحراف الفم', 'جلطة دماغية', 'سكتة دماغية', 'ثقل في اللسان', 'ما يقدرش يتكلم',
+      'fommou mhawel', 'jaltta', 'jalta fi mokh', 'yeddou ma t5demch', 'ma ynajjamch yitkallem', 'lsanou t9il',
+    ],
+    advice_fr: 'Ces signes évoquent un AVC : chaque minute compte. Appelez le 190 immédiatement, notez l’heure du début des symptômes et ne donnez rien à boire ni à manger.',
+    advice_ar: 'تشير هذه العلامات إلى سكتة دماغية وكل دقيقة مهمة. اتصل بالرقم 190 فوراً، وسجّل وقت بداية الأعراض، ولا تعطِ الشخص أكلاً أو شرباً.',
+  },
+  {
+    key: 'heavy_bleeding', level: 5, is_global: true,
+    question_fr: 'Y a-t-il un saignement abondant qui ne s’arrête pas malgré une compression ?',
+    question_ar: 'هل يوجد نزيف غزير لا يتوقف رغم الضغط عليه؟',
+    patterns: [
+      'saignement important', 'saignement abondant', 'saigne beaucoup', 'ca saigne beaucoup', 'saignement qui ne s arrete pas',
+      'hemorragie', 'perd beaucoup de sang',
+      'نزيف شديد', 'نزيف حاد', 'نزيف غزير', 'نزيف ما يوقفش', 'دم برشا',
+      'dam barcha', 'yenzef barcha', 'nzif', 'dem ma w9efch',
+    ],
+    advice_fr: 'Appelez le 190. Comprimez fortement la plaie avec un linge propre sans relâcher, allongez la personne et gardez-la au chaud.',
+    advice_ar: 'اتصل بالرقم 190. اضغط بقوة على الجرح بقطعة قماش نظيفة دون توقف، ومدد الشخص وحافظ على دفئه.',
+  },
+  {
+    key: 'seizure', level: 5, is_global: true,
+    question_fr: 'La personne fait-elle une crise de convulsions, ou en a-t-elle fait une pour la première fois ?',
+    question_ar: 'هل يعاني الشخص من نوبة تشنجات الآن، أو أصيب بها لأول مرة؟',
+    patterns: [
+      'convulsion', 'convulse', 'crise d epilepsie', 'crise epileptique',
+      
+      'نوبة صرع',
+      'kriza sar3', 'نوبة صرع حالية', 'fait une crise d epilepsie'],
+    advice_fr: 'Appelez le 190. Écartez les objets dangereux, ne mettez rien dans la bouche, ne retenez pas les mouvements, puis placez la personne sur le côté quand la crise s’arrête.',
+    advice_ar: 'اتصل بالرقم 190. أبعد الأشياء الخطرة، ولا تضع شيئاً في الفم، ولا تمسك الحركات، ثم ضع الشخص على جانبه عند انتهاء النوبة.',
+  },
+  {
+    key: 'anaphylaxis', level: 5, is_global: true,
+    question_fr: 'Le visage, les lèvres ou la gorge gonflent-ils, avec une gêne pour respirer ou avaler, après un aliment, un médicament ou une piqûre ?',
+    question_ar: 'هل ينتفخ الوجه أو الشفتان أو الحلق مع صعوبة في التنفس أو البلع، بعد طعام أو دواء أو لسعة؟',
+    patterns: [
+      'gorge qui gonfle', 'gorge gonflee', 'levres gonflees', 'visage gonfle', 'langue gonflee', 'oedeme de quincke',
+      'choc anaphylactique', 'reaction allergique grave', 'allergie grave',
+      'تورم الحلق', 'انتفاخ الوجه', 'تورم الشفاه', 'تورم اللسان', 'حساسية شديدة', 'صدمة تحسسية',
+      'wejhi ntfa5', 'grajmi msakra', 'chfayfi ntef5ou', 'hassasiya 9wiya',
+    ],
+    advice_fr: 'Il peut s’agir d’une réaction allergique grave. Appelez le 190 immédiatement. Si un stylo d’adrénaline a été prescrit, utilisez-le sans attendre.',
+    advice_ar: 'قد يكون ذلك رد فعل تحسسياً خطيراً. اتصل بالرقم 190 فوراً. إذا وُصف لك قلم أدرينالين، استعمله دون انتظار.',
+  },
+  {
+    key: 'suicidal', level: 5, is_global: true,
+    question_fr: 'Avez-vous des idées de mettre fin à vos jours ou de vous faire du mal ?',
+    question_ar: 'هل تراودك أفكار لإنهاء حياتك أو لإيذاء نفسك؟',
+    patterns: [
+      'suicide', 'suicider', 'me tuer', 'en finir avec la vie', 'envie d en finir', 'veux mourir', 'voudrais mourir', 'pense a mourir', 'plus la force de vivre', 'marre de la vie', 'mettre fin a mes jours', 'envie de mourir', 'plus envie de vivre',
+      'me faire du mal', 'me scarifier',
+      'انتحار', 'اريد ان اموت', 'اريد الموت', 'nhib nmout', 'n7ib nmout', 'انتحر', 'نقتل روحي', 'نحب نموت', 'انهاء حياتي', 'اؤذي نفسي', 'ما عادش نحب نعيش',
+      'n9tel rou7i', 'nheb nmout', 'n7eb nmout', 'nentaher', 'ma3adech nheb n3ich',
+    ],
+    advice_fr: 'Merci de l’avoir dit, ce que vous ressentez compte et vous n’êtes pas seul(e). Si vous êtes en danger maintenant, appelez le 190 ou rendez-vous aux urgences. Restez auprès d’une personne de confiance et éloignez ce qui pourrait vous blesser.',
+    advice_ar: 'شكراً لأنك عبّرت عن ذلك، فمشاعرك مهمة ولست وحدك. إذا كنت في خطر الآن، اتصل بالرقم 190 أو توجه إلى الاستعجالي. ابقَ بجانب شخص تثق به وأبعد كل ما قد يؤذيك.',
+  },
+  {
+    key: 'severe_trauma', level: 5, is_global: true,
+    question_fr: 'S’agit-il d’un accident grave (route, chute de hauteur, choc violent à la tête), ou d’une brûlure étendue ?',
+    question_ar: 'هل يتعلق الأمر بحادث خطير (طريق، سقوط من علو، ضربة قوية على الرأس) أو بحرق واسع؟',
+    patterns: [
+      'accident de voiture', 'accident de la route', 'accident grave', 'chute de hauteur', 'tombe du toit', 'choc violent a la tete',
+      'traumatisme cranien', 'brulure grave', 'brulure etendue', 'renverse par une voiture',
+      'حادث مرور', 'حادث سيارة', 'حادث خطير', 'سقوط من علو', 'ضربة قوية على الراس', 'حرق كبير',
+      'accident karhba', 'ta7 mel sta7', 'darbtou karhba', 'tdhreb fi rasou',
+    ],
+    advice_fr: 'Appelez le 190. Ne déplacez pas la personne sauf danger immédiat, surtout en cas de choc à la tête ou au dos, et refroidissez une brûlure à l’eau tiède.',
+    advice_ar: 'اتصل بالرقم 190. لا تحرّك الشخص إلا في حالة خطر مباشر، خاصة عند إصابة الرأس أو الظهر، وبرّد الحرق بماء فاتر.',
+  },
+
+  // ===================== Signes spécifiques =====================
+  {
+    key: 'thunderclap_headache', level: 4, is_global: false,
+    question_fr: 'Le mal de tête est-il apparu brutalement, en quelques secondes, comme le pire de votre vie ?',
+    question_ar: 'هل ظهر الصداع فجأة خلال ثوانٍ، وكأنه أسوأ صداع في حياتك؟',
+    patterns: [
+      'pire mal de tete de ma vie', 'mal de tete brutal', 'mal de tete en coup de tonnerre', 'cephalee brutale',
+      'mal de tete tres violent', 'اسوا صداع', 'صداع مفاجئ وشديد', 'rasi tfejja ywaja3',
+    ],
+    advice_fr: 'Un mal de tête brutal et très intense doit être vu aux urgences sans attendre, même s’il diminue.',
+    advice_ar: 'الصداع المفاجئ والشديد جداً يستوجب التوجه إلى الاستعجالي دون انتظار، حتى لو خفّ.',
+  },
+  {
+    key: 'stiff_neck_fever', level: 4, is_global: false,
+    question_fr: 'Avez-vous de la fièvre avec une raideur de la nuque, une gêne à la lumière ou des taches rouges qui ne s’effacent pas à la pression ?',
+    question_ar: 'هل لديك حمى مع تيبس في الرقبة أو انزعاج من الضوء أو بقع حمراء لا تختفي عند الضغط عليها؟',
+    patterns: [
+      'taches qui ne s effacent pas', 'purpura', 'meningite',
+      'التهاب السحايا',
+    ],
+    advice_fr: 'Fièvre et raideur de nuque ou taches rouges peuvent signaler une méningite : allez aux urgences immédiatement, ou appelez le 190 si l’état se dégrade.',
+    advice_ar: 'قد تدل الحمى مع تيبس الرقبة أو البقع الحمراء على التهاب السحايا: توجه إلى الاستعجالي فوراً أو اتصل بالرقم 190 إذا ساءت الحالة.',
+  },
+  {
+    key: 'fever_infant', level: 4, is_global: false,
+    question_fr: 'S’agit-il d’un bébé de moins de 3 mois avec une température de 38 °C ou plus ?',
+    question_ar: 'هل يتعلق الأمر برضيع عمره أقل من 3 أشهر وحرارته 38 درجة أو أكثر؟',
+    patterns: [
+      'bebe de 1 mois', 'bebe de 2 mois', 'nouveau ne a de la fievre', 'nourrisson fievre', 'nouveau-ne fievre',
+      'رضيع عنده سخانة', 'رضيع حمى', 'ma3dhou chhar w s5ana',
+    ],
+    advice_fr: 'Chez un bébé de moins de 3 mois, toute fièvre doit être évaluée aux urgences pédiatriques sans attendre.',
+    advice_ar: 'عند الرضيع الذي يقل عمره عن 3 أشهر، يجب فحص أي حمى في استعجالي الأطفال دون انتظار.',
+  },
+  {
+    key: 'dehydration', level: 4, is_global: false,
+    question_fr: 'La personne n’arrive plus à boire, n’urine presque plus, ou est très somnolente ?',
+    question_ar: 'هل لم يعد الشخص قادراً على الشرب، أو لم يعد يتبول تقريباً، أو هو شديد النعاس؟',
+    patterns: [
+      'n urine plus', 'ne fait plus pipi', 'n arrive plus a boire', 'vomit tout ce qu il boit', 'deshydrate', 'deshydratation',
+      'جفاف', 'ما عادش يبول', 'ما ينجمش يشرب', 'ma3adech ybawel', 'mayenjemch yochrob',
+    ],
+    advice_fr: 'Des signes de déshydratation importante, surtout chez un enfant ou une personne âgée, nécessitent une évaluation aux urgences.',
+    advice_ar: 'علامات الجفاف الشديد، خاصة عند الطفل أو المسن، تستوجب الفحص في قسم الاستعجالي.',
+  },
+  {
+    key: 'blood_vomit_black_stool', level: 4, is_global: false,
+    question_fr: 'Avez-vous vomi du sang, ou avez-vous des selles noires comme du goudron ?',
+    question_ar: 'هل تقيأت دماً، أو هل برازك أسود مثل القطران؟',
+    patterns: [
+      'vomi du sang', 'vomit du sang', 'vomissement de sang', 'selles noires', 'caca noir',
+      'تقيؤ دم', 'استفراغ دم', 'براز اسود', 'raje3t dam', 'tgayya dam',
+    ],
+    advice_fr: 'Du sang dans les vomissements ou des selles noires peuvent signaler un saignement digestif : allez aux urgences maintenant.',
+    advice_ar: 'قد يدل الدم في القيء أو البراز الأسود على نزيف هضمي: توجه إلى الاستعجالي الآن.',
+  },
+  {
+    key: 'rigid_abdomen', level: 4, is_global: false,
+    question_fr: 'La douleur au ventre est-elle très intense, avec un ventre dur, ou empêche-t-elle de bouger ?',
+    question_ar: 'هل ألم البطن شديد جداً مع بطن صلب، أو يمنعك من الحركة؟',
+    patterns: [
+      'ventre dur', 'ventre tres dur', 'douleur insupportable au ventre', 'douleur atroce au ventre', 'appendicite',
+      'بطن صلب', 'الم شديد جدا في البطن', 'zaida', 'kerchi m7ajra',
+    ],
+    advice_fr: 'Une douleur abdominale très intense ou un ventre dur doit être examiné aux urgences sans tarder. Ne mangez pas et ne prenez pas d’anti-inflammatoire en attendant.',
+    advice_ar: 'يجب فحص الألم البطني الشديد جداً أو البطن الصلب في الاستعجالي دون تأخير. لا تأكل ولا تتناول مضادات الالتهاب في الانتظار.',
+  },
+  {
+    key: 'sudden_vision_loss', level: 4, is_global: false,
+    question_fr: 'Avez-vous perdu brutalement la vue, totalement ou en partie, ou voyez-vous un voile ou des éclairs soudains ?',
+    question_ar: 'هل فقدت البصر فجأة كلياً أو جزئياً، أو ترى ستاراً أو ومضات مفاجئة؟',
+    patterns: [
+      'je ne vois plus', 'perte de la vue', 'perte de vision', 'vision brutalement floue', 'voile devant l oeil', 'rideau devant l oeil',
+      'فقدان البصر', 'ما عادش نشوف', 'ma3adech nchouf',
+    ],
+    advice_fr: 'Une baisse brutale de la vue est une urgence ophtalmologique : rendez-vous aux urgences immédiatement.',
+    advice_ar: 'الانخفاض المفاجئ في النظر حالة طارئة في طب العيون: توجه إلى الاستعجالي فوراً.',
+  },
+  {
+    key: 'eye_chemical_trauma', level: 4, is_global: false,
+    question_fr: 'Un produit chimique a-t-il touché l’œil, ou l’œil a-t-il reçu un choc ou un objet pointu ?',
+    question_ar: 'هل لامس العين منتج كيميائي، أو تعرضت العين لضربة أو لجسم حاد؟',
+    patterns: [
+      'produit dans l oeil', 'javel dans l oeil', 'eau de javel dans les yeux', 'produit chimique dans l oeil',
+      'مادة كيميائية في العين', 'جافال في عيني', 'javel fi 3ini',
+    ],
+    advice_fr: 'Rincez l’œil abondamment à l’eau claire pendant au moins 15 minutes, sans frotter, puis allez aux urgences.',
+    advice_ar: 'اغسل العين بكثير من الماء النظيف مدة 15 دقيقة على الأقل دون فرك، ثم توجه إلى الاستعجالي.',
+  },
+  {
+    key: 'pregnancy_bleeding_pain', level: 4, is_global: false,
+    question_fr: 'Êtes-vous enceinte avec des saignements, une douleur forte au ventre, ou une perte de liquide ?',
+    question_ar: 'هل أنتِ حامل وتعانين من نزيف أو ألم شديد في البطن أو نزول سائل؟',
+    patterns: [
+      'enceinte et je saigne', 'saignement pendant la grossesse', 'saigne enceinte', 'perte des eaux', 'perte de liquide enceinte',
+      'نزيف اثناء الحمل', 'حامل ونزيف', 'نزول الماء', '7amel w dam',
+    ],
+    advice_fr: 'Pendant la grossesse, un saignement, une douleur forte ou une perte de liquide nécessitent les urgences de la maternité sans attendre.',
+    advice_ar: 'خلال الحمل، يستوجب النزيف أو الألم الشديد أو نزول السائل التوجه إلى استعجالي الولادة دون انتظار.',
+  },
+  {
+    key: 'reduced_fetal_movement', level: 4, is_global: false,
+    question_fr: 'Êtes-vous enceinte de plus de 5 mois et sentez-vous le bébé bouger beaucoup moins que d’habitude ?',
+    question_ar: 'هل أنتِ حامل لأكثر من 5 أشهر وتشعرين بأن الجنين يتحرك أقل بكثير من المعتاد؟',
+    patterns: [
+      'bebe ne bouge plus', 'bebe bouge moins', 'ne sens plus le bebe bouger',
+      'الجنين لا يتحرك', 'البيبي ما عادش يتحرك', 'bebe ma3adech yet7arek',
+    ],
+    advice_fr: 'Une diminution des mouvements du bébé doit être vérifiée aux urgences de la maternité le jour même.',
+    advice_ar: 'يجب التحقق من انخفاض حركة الجنين في استعجالي الولادة في نفس اليوم.',
+  },
+  {
+    key: 'testicular_pain_sudden', level: 4, is_global: false,
+    question_fr: 'Avez-vous une douleur brutale et intense d’un testicule ?',
+    question_ar: 'هل تشعر بألم مفاجئ وشديد في إحدى الخصيتين؟',
+    patterns: [
+      'douleur brutale au testicule', 'torsion testiculaire',
+      'التواء الخصية', 'douleur soudaine au testicule'],
+    advice_fr: 'Une douleur brutale d’un testicule peut être une torsion, à opérer en quelques heures : allez aux urgences immédiatement.',
+    advice_ar: 'قد يكون الألم المفاجئ في الخصية التواءً يتطلب عملية خلال ساعات: توجه إلى الاستعجالي فوراً.',
+  },
+  {
+    key: 'urinary_fever_flank', level: 3, is_global: false,
+    question_fr: 'Avez-vous des brûlures urinaires avec de la fièvre, des frissons ou une douleur dans le bas du dos sur un côté ?',
+    question_ar: 'هل تعاني من حرقة في البول مع حمى أو قشعريرة أو ألم في أسفل الظهر من جهة واحدة؟',
+    patterns: [
+      'brulures urinaires et fievre', 'infection urinaire avec fievre', 'pyelonephrite', 'colique nephretique',
+      'حرقة البول مع حمى', 'التهاب الكلى', 'المغص الكلوي',
+    ],
+    advice_fr: 'Une infection urinaire avec fièvre ou douleur lombaire peut toucher le rein : consultez un médecin aujourd’hui.',
+    advice_ar: 'قد يصل التهاب المسالك البولية المصحوب بحمى أو ألم في الظهر إلى الكلية: استشر طبيباً اليوم.',
+  },
+  {
+    key: 'fracture_deformity', level: 4, is_global: false,
+    question_fr: 'Après une chute ou un choc, le membre est-il déformé, ou est-il impossible de s’appuyer dessus ou de le bouger ?',
+    question_ar: 'بعد سقوط أو ضربة، هل الطرف مشوّه، أو يستحيل الاعتماد عليه أو تحريكه؟',
+    patterns: [
+      'os casse', 'fracture', 'jambe deformee', 'bras deforme', 'impossible de poser le pied', 'os qui sort',
+      'كسر', 'عظم مكسور', 'tkasret', 'mkasra', '3dhem mkasser',
+    ],
+    advice_fr: 'Immobilisez le membre dans la position où il se trouve, sans essayer de le remettre droit, et rendez-vous aux urgences.',
+    advice_ar: 'ثبّت الطرف في وضعيته دون محاولة تقويمه، وتوجه إلى الاستعجالي.',
+  },
+  {
+    key: 'cauda_equina', level: 4, is_global: false,
+    question_fr: 'Avec ce mal de dos, avez-vous du mal à retenir ou à émettre les urines ou les selles, ou une perte de sensibilité entre les jambes ?',
+    question_ar: 'مع ألم الظهر هذا، هل تجد صعوبة في التحكم في البول أو البراز، أو فقداناً للإحساس بين الساقين؟',
+    patterns: [
+      'ne sens plus entre les jambes', 'perte de controle des urines', 'incontinence brutale', 'ne peux plus uriner',
+      'فقدان التحكم في البول', 'تنميل بين الساقين',
+    ],
+    advice_fr: 'Ces signes associés à un mal de dos nécessitent une évaluation aux urgences immédiatement, car un nerf peut être comprimé.',
+    advice_ar: 'تستوجب هذه العلامات المصاحبة لألم الظهر الفحص في الاستعجالي فوراً لاحتمال انضغاط عصب.',
+  },
+  {
+    key: 'spreading_redness_fever', level: 3, is_global: false,
+    question_fr: 'Une rougeur chaude et douloureuse s’étend-elle autour d’une plaie ou sur la peau, avec de la fièvre ?',
+    question_ar: 'هل يمتد احمرار ساخن ومؤلم حول جرح أو على الجلد، مع حمى؟',
+    patterns: [
+      'rougeur qui s etend', 'plaie infectee', 'jambe rouge et chaude', 'abces',
+      'احمرار يتوسع', 'جرح ملتهب', 'خراج',
+    ],
+    advice_fr: 'Une rougeur qui s’étend avec de la fièvre peut être une infection de la peau : consultez un médecin aujourd’hui. Entourez la rougeur au stylo pour suivre son évolution.',
+    advice_ar: 'قد يكون الاحمرار المتوسع مع الحمى التهاباً جلدياً: استشر طبيباً اليوم. ارسم حدود الاحمرار بقلم لمتابعة تطوره.',
+  },
+  {
+    key: 'facial_swelling_dental', level: 3, is_global: false,
+    question_fr: 'La joue ou la mâchoire est-elle gonflée, avec de la fièvre ou une difficulté à ouvrir la bouche ou à avaler ?',
+    question_ar: 'هل الخد أو الفك منتفخ، مع حمى أو صعوبة في فتح الفم أو البلع؟',
+    patterns: [
+      'joue gonflee', 'abces dentaire', 'machoire gonflee', 'dent et joue gonflee',
+      'خد منتفخ', 'خراج في السن', 'khaddi ntfa5', 'khadi m3atag',
+    ],
+    advice_fr: 'Un gonflement de la joue avec fièvre peut signaler un abcès dentaire : consultez un dentiste ou un médecin aujourd’hui. Allez aux urgences si la gêne pour avaler ou respirer augmente.',
+    advice_ar: 'قد يدل انتفاخ الخد مع الحمى على خراج سني: استشر طبيب أسنان أو طبيباً اليوم، وتوجه إلى الاستعجالي إذا زادت صعوبة البلع أو التنفس.',
+  },
+  {
+    key: 'persistent_high_fever', level: 3, is_global: false,
+    question_fr: 'La fièvre dépasse-t-elle 39,5 °C, ou dure-t-elle depuis plus de 3 jours ?',
+    question_ar: 'هل تتجاوز الحمى 39.5 درجة، أو تستمر منذ أكثر من 3 أيام؟',
+    patterns: [
+      'fievre depuis 4 jours', 'fievre depuis 5 jours', 'fievre depuis une semaine', 'fievre a 40', 'fievre de 40', 'temperature a 40',
+      'سخانة 40', 'حمى منذ اسبوع', 's5ana 40', 's5ana jem3a',
+    ],
+    advice_fr: 'Une fièvre très élevée ou qui persiste plus de 3 jours justifie de voir un médecin aujourd’hui.',
+    advice_ar: 'الحمى المرتفعة جداً أو المستمرة أكثر من 3 أيام تستوجب زيارة طبيب اليوم.',
+  },
+  {
+    key: 'breathless_on_exertion_new', level: 3, is_global: false,
+    question_fr: 'Êtes-vous essoufflé(e) pour des efforts qui ne vous gênaient pas avant, ou avez-vous les jambes qui gonflent ?',
+    question_ar: 'هل تشعر بضيق التنفس عند مجهود لم يكن يزعجك من قبل، أو هل ساقاك منتفختان؟',
+    patterns: [
+      'essouffle en montant les escaliers', 'essoufflement nouveau', 'jambes gonflees et essoufflement',
+      'ضيق نفس عند المشي', 'نتعب في الدروج',
+    ],
+    advice_fr: 'Un essoufflement nouveau à l’effort doit être évalué par un médecin aujourd’hui ou demain.',
+    advice_ar: 'يجب أن يقيّم طبيب ضيق التنفس الجديد عند المجهود اليوم أو غداً.',
+  },
+  {
+    key: 'unexplained_weight_loss', level: 3, is_global: false,
+    question_fr: 'Avez-vous perdu du poids sans le vouloir (plusieurs kilos en quelques semaines), avec fatigue ou sueurs nocturnes ?',
+    question_ar: 'هل فقدت وزناً دون قصد (عدة كيلوغرامات في بضعة أسابيع) مع تعب أو تعرق ليلي؟',
+    patterns: [
+      'perdu du poids sans raison', 'je maigris sans raison', 'perte de poids inexpliquee', 'sueurs nocturnes',
+      'نقص الوزن بدون سبب', 'نضعف بلا سبب',
+    ],
+    advice_fr: 'Une perte de poids involontaire mérite un bilan : prenez rendez-vous rapidement avec votre médecin.',
+    advice_ar: 'فقدان الوزن غير المقصود يستحق فحصاً شاملاً: احجز موعداً قريباً مع طبيبك.',
+  },
+  {
+    key: 'blood_in_urine', level: 3, is_global: false,
+    question_fr: 'Voyez-vous du sang dans vos urines ?',
+    question_ar: 'هل ترى دماً في البول؟',
+    patterns: [
+      'sang dans les urines', 'urine rouge', 'urines rouges', 'urine avec du sang', 'hematurie',
+      'دم في البول', 'بول احمر', 'dam fil bawl',
+    ],
+    advice_fr: 'Du sang dans les urines doit toujours être évalué : consultez un médecin aujourd’hui ou demain.',
+    advice_ar: 'يجب دائماً فحص الدم في البول: استشر طبيباً اليوم أو غداً.',
+  },
+  {
+    key: 'chest_pain_mild_persistent', level: 3, is_global: false,
+    question_fr: 'Avez-vous une gêne ou une douleur modérée dans la poitrine qui revient ou dure depuis plusieurs heures ?',
+    question_ar: 'هل تشعر بانزعاج أو ألم متوسط في الصدر يتكرر أو يستمر منذ عدة ساعات؟',
+    patterns: [
+      'gene dans la poitrine', 'petite douleur a la poitrine', 'douleur poitrine qui revient',
+      'انزعاج في الصدر', 'الم خفيف في الصدر',
+    ],
+    advice_fr: 'Toute douleur thoracique qui persiste ou revient doit être évaluée par un médecin aujourd’hui. Appelez le 190 si elle devient forte ou s’accompagne de sueurs ou d’essoufflement.',
+    advice_ar: 'يجب أن يقيّم طبيب أي ألم في الصدر يستمر أو يتكرر اليوم. اتصل بالرقم 190 إذا أصبح قوياً أو رافقه تعرق أو ضيق تنفس.',
+  },
+];
