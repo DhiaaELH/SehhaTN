@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+.angular/
+.env
+.env.local
+.DS_Store
+*.log
+.vscode/*
+!.vscode/settings.json
+*.db
+.env
