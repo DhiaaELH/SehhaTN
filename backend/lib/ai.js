@@ -18,17 +18,17 @@ const { AGE_GROUPS, DURATIONS, SEVERITIES } = require('./triage');
 const KEY = () => process.env.AI_API_KEY || '';
 const enabled = () => Boolean(KEY());
 
-/** Fournisseur : AI_PROVIDER, sinon deviné d'après la clé (sk-ant = Anthropic, AIza = Gemini, autre = OpenAI). */
+/** Fournisseur : AI_PROVIDER, sinon deviné d'après la clé (sk-ant = Anthropic, AIza ou AQ. = Gemini, autre = OpenAI). */
 function provider() {
   const p = (process.env.AI_PROVIDER || '').toLowerCase();
   if (['gemini', 'openai', 'anthropic'].includes(p)) return p;
   const k = KEY();
   if (k.startsWith('sk-ant-')) return 'anthropic';
-  if (k.startsWith('AIza')) return 'gemini';
+  if (k.startsWith('AIza') || k.startsWith('AQ.')) return 'gemini';
   return 'openai';
 }
 const DEFAULTS = {
-  gemini:    { model: 'gemini-3.6-flash',  base: 'https://generativelanguage.googleapis.com' },
+  gemini:    { model: 'gemini-3.6-flash',  /* ou gemini-3.5-flash-lite (moins cher) */  base: 'https://generativelanguage.googleapis.com' },
   openai:    { model: 'gpt-5-mini',        base: 'https://api.openai.com/v1' },
   anthropic: { model: 'claude-haiku-5-5',  base: 'https://api.anthropic.com' },
 };
@@ -142,7 +142,7 @@ async function callProvider(system, turns) {
     });
     pick = (d) => d?.choices?.[0]?.message?.content;
   }
-  if (!res.ok) throw new Error(`${p} HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`${p} HTTP ${res.status} ${(await res.text()).replace(/\s+/g, ' ').slice(0, 300)}`);
   const text = pick(await res.json());
   if (!text) throw new Error(`${p} : réponse vide`);
   return text;
