@@ -21,11 +21,19 @@ interface NewsItem { title: string; link: string; source: string; image: string 
         <p>{{ t('Trouvez un médecin en Tunisie, ou montrez-nous où ça fait mal.', 'ابحث عن طبيب في تونس، أو أرنا مكان الألم.') }}</p>
       </header>
 
-      <section class="hm-photo-hero">
-        <img src="assets/home-tunisia-healthcare-banner.png" [alt]="t('Bannière SehhaTN : une médecin et les services de santé en Tunisie', 'SehhaTN: طبيبة وخدمات صحية في تونس')" fetchpriority="high">
-        <div class="hm-photo-shade"></div>
-        <div class="hm-photo-copy"><span>{{ t('SEHHA TN · AU PLUS PRÈS DE VOUS', 'صحتك في تونس · أقرب إليك') }}</span><h2>{{ t('Votre santé mérite un bon point de départ.', 'صحتك تستحق بداية موفقة.') }}</h2><p>{{ t('Médecins, conseils santé et services utiles, réunis au même endroit.', 'الأطباء والإرشادات الصحية والخدمات المفيدة في مكان واحد.') }}</p></div>
-      </section>
+      <nav class="hm-tiles" [attr.aria-label]="t('Accès rapide', 'وصول سريع')">
+        @for (tile of tiles; track tile.path; let i = $index) {
+          <button type="button" class="hm-tile" [class]="'hm-tile t' + (i + 1)" [style.--i]="i" (click)="open(tile.path)">
+            <svg class="hm-tile-art" viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="tile.d"/></svg>
+            <span class="hm-tile-no" aria-hidden="true">0{{ i + 1 }}</span>
+            <span class="hm-tile-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path [attr.d]="tile.d"/></svg></span>
+            <span class="hm-tile-tag">{{ t(tile.tag_fr, tile.tag_ar) }}</span>
+            <strong class="hm-tile-title">{{ t(tile.fr, tile.ar) }}</strong>
+            <span class="hm-tile-desc">{{ t(tile.desc_fr, tile.desc_ar) }}</span>
+            <span class="hm-tile-go" aria-hidden="true">→</span>
+          </button>
+        }
+      </nav>
 
       <div class="hm-grid">
         <div class="hm-card hm-map"><app-body-map (pick)="go({ specialty: $event })"/></div>
@@ -130,13 +138,35 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     .hm-head h1 { margin: 0; font-size: clamp(34px, 5vw, 54px); line-height: 1.08; letter-spacing: -.02em; color: var(--navy); font-weight: 800; }
     .hm-head h1 span { color: var(--teal); }
     .hm-head p { margin: 12px 0 0; color: var(--muted); font-size: 16.5px; }
-    .hm-photo-hero { aspect-ratio: 1932 / 825; height: auto; position: relative; overflow: hidden; border-radius: 22px; margin: 0 0 22px; background: #0b325e; }
-    .hm-photo-hero img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 35%; }
-    .hm-photo-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(5,31,58,.08),transparent 63%); }
-    .hm-photo-copy { position:absolute; left:7%; top:50%; transform:translateY(-50%); max-width:43%; color:#fff; }
-    .hm-photo-copy>span { font-size:10px; font-weight:800; letter-spacing:1.6px; color:#9ee9e0; }
-    .hm-photo-copy h2 { margin:12px 0 8px; color:white; font-size:clamp(24px,3.1vw,38px); line-height:1.15; }
-    .hm-photo-copy p { margin:0; color:#e2edf6; font-size:14px; line-height:1.6; }
+    .hm-tiles { display: flex; gap: 14px; height: 300px; margin: 0 0 26px; }
+    .hm-tile { --c1: #0b325e; --c2: #0f5f8a; position: relative; isolation: isolate; overflow: hidden; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 6px; text-align: start; padding: 22px 22px 20px; border: 0; border-radius: 24px; color: #fff; cursor: pointer; background: linear-gradient(155deg, var(--c1), var(--c2)); box-shadow: 0 14px 30px rgba(11, 50, 94, .18); transition: flex-grow .45s cubic-bezier(.2, .8, .2, 1), transform .3s, box-shadow .3s; animation: hmrise .6s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--i) * 90ms); }
+    .hm-tile.t1 { --c1: #0b325e; --c2: #14708f; }
+    .hm-tile.t2 { --c1: #0f4c75; --c2: #12a6a0; }
+    .hm-tile.t3 { --c1: #0e7c86; --c2: #35c2a4; }
+    .hm-tile.t4 { --c1: #123d6b; --c2: #2b8f9c; }
+    .hm-tile::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 85% 8%, rgba(255, 255, 255, .28), transparent 46%); transition: opacity .4s; opacity: .6; }
+    .hm-tile::after { content: ''; position: absolute; width: 170px; height: 170px; inset-inline-end: -60px; bottom: -70px; z-index: -1; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .22); box-shadow: 0 0 0 26px rgba(255, 255, 255, .05), 0 0 0 54px rgba(255, 255, 255, .03); transition: transform .6s; }
+    .hm-tiles:hover .hm-tile { flex-grow: .8; }
+    .hm-tiles .hm-tile:hover, .hm-tiles .hm-tile:focus-visible { flex-grow: 1.7; transform: translateY(-8px); box-shadow: 0 26px 46px rgba(11, 50, 94, .3); }
+    .hm-tile:hover::before { opacity: 1; }
+    .hm-tile:hover::after { transform: scale(1.35); }
+    .hm-tile:focus-visible { outline: 3px solid #9ee9e0; outline-offset: 3px; }
+    .hm-tile-art { position: absolute; inset-inline-end: -14px; top: 10px; width: 150px; height: 150px; z-index: -1; fill: none; stroke: #fff; stroke-width: .8; stroke-linecap: round; stroke-linejoin: round; opacity: .16; transform: rotate(-8deg); transition: transform .6s, opacity .4s; }
+    .hm-tile:hover .hm-tile-art { transform: rotate(0) scale(1.12); opacity: .26; }
+    .hm-tile-no { position: absolute; inset-inline-start: 22px; top: 18px; font: 800 13px/1 Montserrat, sans-serif; letter-spacing: 2px; color: rgba(255, 255, 255, .6); }
+    .hm-tile-ico { position: relative; width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; margin-bottom: auto; margin-top: 34px; background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .35); backdrop-filter: blur(6px); transition: transform .4s; }
+    .hm-tile-ico::after { content: ''; position: absolute; inset: -1px; border-radius: 18px; border: 2px solid rgba(255, 255, 255, .55); animation: hmpulse 2.8s infinite; animation-delay: calc(var(--i) * 350ms); }
+    .hm-tile-ico svg { width: 28px; height: 28px; fill: none; stroke: #fff; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .hm-tile:hover .hm-tile-ico { transform: scale(1.1) rotate(-6deg); }
+    .hm-tile-tag { font-size: 10.5px; font-weight: 800; letter-spacing: 1.3px; text-transform: uppercase; color: #9ee9e0; }
+    .hm-tile-title { font: 800 clamp(20px, 2.1vw, 26px)/1.1 Montserrat, sans-serif; color: #fff; }
+    .hm-tile-desc { max-width: 30ch; font-size: 13.5px; line-height: 1.5; color: #e6f1f8; max-height: 0; opacity: 0; overflow: hidden; transition: max-height .45s, opacity .35s .05s; }
+    .hm-tile:hover .hm-tile-desc, .hm-tile:focus-visible .hm-tile-desc { max-height: 80px; opacity: 1; }
+    .hm-tile-go { position: absolute; inset-inline-end: 18px; top: 16px; width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: #fff; color: var(--navy); font-weight: 800; transform: translateX(-6px); opacity: 0; transition: transform .35s, opacity .3s; }
+    .hm-tile:hover .hm-tile-go, .hm-tile:focus-visible .hm-tile-go { transform: none; opacity: 1; }
+    :host-context([dir=rtl]) .hm-tile-go { transform: scaleX(-1); }
+    @keyframes hmrise { from { opacity: 0; transform: translateY(26px) scale(.97); } to { opacity: 1; transform: none; } }
+    @keyframes hmpulse { 0% { transform: scale(1); opacity: .7; } 70%, 100% { transform: scale(1.35); opacity: 0; } }
     .hm-grid { display: grid; grid-template-columns: 1.15fr 1fr; grid-template-areas: "map search"; gap: 20px; align-items: stretch; }
     .hm-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 24px; box-shadow: 0 10px 30px rgba(11, 50, 94, .05); }
     .hm-map { grid-area: map; } .hm-search { grid-area: search; }
@@ -184,15 +214,18 @@ interface NewsItem { title: string; link: string; source: string; image: string 
     @media (max-width: 860px) {
       .hm { padding: 24px 16px 44px; }
       .hm-grid { grid-template-columns: 1fr; grid-template-areas: "search" "map"; }
-      .hm-photo-hero { height:auto; aspect-ratio:1932 / 825; border-radius:16px; }
-      .hm-photo-copy { left:6%; right:auto; max-width:46%; }
-      .hm-photo-copy>span { font-size:8px; letter-spacing:.8px; }
-      .hm-photo-copy h2 { font-size:clamp(14px,4vw,24px); margin:7px 0 5px; }
-      .hm-photo-copy p { font-size:10px; }
+      .hm-tiles { display: grid; grid-template-columns: 1fr 1fr; height: auto; gap: 12px; }
+      .hm-tile { min-height: 190px; padding: 16px; border-radius: 20px; }
+      .hm-tiles:hover .hm-tile, .hm-tiles .hm-tile:hover { flex-grow: 1; transform: none; }
+      .hm-tile-desc { max-height: none; opacity: 1; font-size: 12px; max-width: none; }
+      .hm-tile-go { opacity: 1; transform: none; width: 32px; height: 32px; }
+      .hm-tile-ico { width: 46px; height: 46px; margin-top: 28px; border-radius: 14px; }
+      .hm-tile-art { width: 110px; height: 110px; }
       .hm-card { padding: 18px; }
     }
+    @media (max-width: 380px) { .hm-tiles { grid-template-columns: 1fr; } }
     @media (max-width: 520px) { .hm-fields, .hm-quick { grid-template-columns: 1fr; } .hm-news-grid { grid-template-columns: 1fr; } }
-    @media (prefers-reduced-motion: reduce) { .hm-skel { animation: none; } .hm-news-card { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .hm-skel, .hm-tile, .hm-tile-ico::after { animation: none; } .hm-tile, .hm-tile-desc, .hm-tile-art, .hm-tile::after { transition: none; } .hm-news-card { transition: none; } }
   `],
 })
 export class HomeComponent {
@@ -201,6 +234,22 @@ export class HomeComponent {
   readonly router = inject(Router);
   readonly doctorService = inject(DoctorService);
   readonly top = signal<Doctor[]>([]);
+
+  readonly tiles = [
+    { path: '/doctors', fr: 'Médecins', ar: 'الأطباء', tag_fr: 'Annuaire vérifié', tag_ar: 'دليل موثّق',
+      desc_fr: 'Trouvez un médecin par spécialité et par ville, et prenez rendez-vous.', desc_ar: 'ابحث عن طبيب حسب التخصص والمدينة واحجز موعداً.',
+      d: 'M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4M22 10a2 2 0 1 1-4 0 2 2 0 0 1 4 0' },
+    { path: '/assistant', fr: 'Assistant santé', ar: 'المساعد الصحي', tag_fr: 'Réponse en quelques mots', tag_ar: 'جواب في كلمات',
+      desc_fr: 'Décrivez ce que vous ressentez, il vous indique vers qui vous tourner.', desc_ar: 'صف ما تشعر به وسيرشدك إلى الجهة المناسبة.',
+      d: 'M7.9 20A9 9 0 1 0 4 16.1L2 22ZM12 8v6M9 11h6' },
+    { path: '/lieux-de-sante', fr: 'Lieux de soins', ar: 'أماكن الرعاية', tag_fr: 'Pharmacies et urgences', tag_ar: 'صيدليات وطوارئ',
+      desc_fr: 'Pharmacies de nuit, urgences et hôpitaux autour de vous.', desc_ar: 'صيدليات الليل والطوارئ والمستشفيات القريبة منك.',
+      d: 'M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0ZM15 10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z' },
+    { path: '/guide', fr: 'Guide santé', ar: 'الدليل الصحي', tag_fr: 'Fiches claires', tag_ar: 'بطاقات واضحة',
+      desc_fr: 'Comprendre les maladies courantes : signes, conseils, quand consulter.', desc_ar: 'افهم الأمراض الشائعة: الأعراض والنصائح ومتى تستشير.',
+      d: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' },
+  ];
+  open(path: string) { this.router.navigateByUrl(path); }
 
   /** Demande d'ouverture de l'annuaire avec ces filtres. */
   search = output<HomeSearch>();
