@@ -4,6 +4,7 @@ const pool = require('../db');
 const { parse, hideDemo } = require('../lib/http');
 const { getKnowledge } = require('../lib/knowledge');
 const triage = require('../lib/triage');
+const ai = require('../lib/ai');
 
 const router = express.Router();
 
@@ -33,6 +34,8 @@ const stateSchema = z.object({
   pending: z.object({ type: z.string().max(20), key: key.optional() }).nullable(),
   misses: z.number().int().min(0).max(10),
   done: z.boolean(),
+  // Derniers échanges, gardés par le navigateur (jamais enregistrés) pour que l'assistant suive la conversation
+  history: z.array(z.object({ r: z.enum(['u', 'm']), t: z.string().max(900) })).max(12),
 }).partial();
 const answerSchema = z.object({
   field: z.enum(['age_group', 'pregnant', 'duration', 'severity', 'flag', 'symptom', 'other']),
@@ -94,12 +97,57 @@ router.post('/evaluate', async (req, res) => {
   res.json(await decorate(outcome, body.lang, body.governorate));
 });
 
+/** Tour de conversation avec le modèle d'IA. Les signes d'alerte sont vérifiés par nos règles AVANT tout appel,
+ *  puis le niveau de soins est calculé par nos règles APRÈS : l'IA ne fait que converser.
+ *  Renvoie null si l'IA est indisponible : le moteur de règles répond alors seul. */
+async function aiTurn(kb, body, ip) {
+  let state = { ...triage.emptyState(), ...(body.state ?? {}) };
+  if (state.done) state = { ...triage.emptyState(), age_group: state.age_group, pregnant: state.pregnant, history: [] };
+  const history = Array.isArray(state.history) ? state.history : [];
+  const isAlert = (keys) => keys.some((k) => kb.redFlags.find((f) => f.key === k)?.level >= 4);
+
+  // 1. Sécurité : les règles lisent le message en premier. Signe grave → orientation immédiate, sans appeler l'IA.
+  const det = triage.chatTurn(kb, { message: body.message, state, lang: body.lang });
+  if (det.outcome && det.outcome.level >= 4) return { ...det, state: { ...det.state, history: [] } };
+
+  // 2. Conversation avec l'IA (avec garde-fous de quota)
+  if (!ai.allow(ip)) return null;
+  const out = await ai.converse(kb, { lang: body.lang, history, message: body.message, state: det.state });
+
+  // 3. On fusionne ce que l'IA a compris dans l'état de la conversation
+  const s = { ...det.state, pending: null, misses: 0, done: false };
+  for (const k of out.symptoms) if (!s.symptoms.includes(k)) s.symptoms.push(k);
+  for (const f of ['age_group', 'duration', 'severity']) if (!s[f] && out[f]) s[f] = out[f];
+  if (s.pregnant == null && out.pregnant != null) s.pregnant = out.pregnant;
+  for (const k of out.red_flags) if (!s.flags_yes.includes(k)) s.flags_yes.push(k);
+
+  const nextHistory = [...history, { r: 'u', t: body.message.slice(0, 700) }, { r: 'm', t: out.reply.slice(0, 700) }].slice(-10);
+  const userTurns = nextHistory.filter((h) => h.r === 'u').length;
+  const emergency = isAlert(s.flags_yes);
+
+  // 4. Conclusion : le niveau de soins, la spécialité et les médecins viennent des règles
+  if (emergency || (s.symptoms.length && (out.ready || userTurns >= 6))) {
+    s.done = true;
+    const outcome = triage.evaluate(kb, { ...s, red_flags: s.flags_yes, lang: body.lang });
+    const kind = outcome.level >= 4 ? 'urgent' : outcome.level >= 2 ? 'care' : 'normal';
+    const messages = emergency ? [] : [{ text: out.reply }];
+    messages.push({ text: outcome.title, kind });
+    return { messages, quick_replies: [], state: { ...s, history: [] }, outcome };
+  }
+  return { messages: [{ text: out.reply }], quick_replies: [], state: { ...s, history: nextHistory } };
+}
+
 // POST /api/triage/chat : un tour de conversation avec l'assistant
 router.post('/chat', async (req, res) => {
   const body = parse(chatSchema, req.body, res);
   if (!body) return;
   const kb = await getKnowledge();
-  const turn = triage.chatTurn(kb, body);
+  let turn = null;
+  if (body.message && ai.enabled()) {
+    try { turn = await aiTurn(kb, body, req.ip); }
+    catch (err) { console.error('Assistant IA indisponible, repli sur les règles :', err.message); }
+  }
+  turn ??= triage.chatTurn(kb, body);
   if (turn.outcome) turn.outcome = await decorate(turn.outcome, body.lang, body.governorate);
   res.json(turn);
 });

@@ -21,7 +21,7 @@ import { TriageChatComponent } from './triage-chat.component';
         <p class="chat-intro">{{ t('Décrivez vos symptômes avec vos mots, en français, en arabe ou en derja. Je vous pose quelques questions, puis je vous dis si des conseils simples suffisent ou s’il faut consulter — et qui.', 'صف أعراضك بكلماتك، بالفرنسية أو العربية أو الدارجة. سأطرح عليك بعض الأسئلة ثم أخبرك إن كانت النصائح البسيطة كافية أو يجب استشارة طبيب، ومن هو.') }}
           <button class="as-link" (click)="router.navigateByUrl('/orientation')">{{ t('Préférez-vous un questionnaire guidé ?', 'هل تفضل استبياناً موجهاً؟') }} →</button></p>
         <app-triage-chat [lang]="langService.lang()" />
-        <p class="as-privacy">🔒 {{ t('Vos messages servent uniquement à calculer la réponse : ils ne sont ni enregistrés, ni transmis à un service d’intelligence artificielle externe.', 'تُستخدم رسائلك فقط لحساب الرد: لا يتم حفظها ولا إرسالها إلى أي خدمة ذكاء اصطناعي خارجية.') }}</p>
+        <p class="as-privacy">🔒 {{ t('Lorsque vous écrivez librement, votre message peut être envoyé à un service d’intelligence artificielle tiers pour formuler la réponse. SehhaTN ne l’enregistre pas. Évitez d’indiquer votre nom ou vos coordonnées.', 'عندما تكتب بحرية، قد تُرسل رسالتك إلى خدمة ذكاء اصطناعي خارجية لصياغة الرد. لا تحفظها SehhaTN. تجنب ذكر اسمك أو بيانات الاتصال الخاصة بك.') }}</p>
       </div>
     </section>
   `,

@@ -44,8 +44,8 @@ const FAQ: FaqGroup[] = [
       a_fr: 'La carte santé regroupe groupe sanguin, allergies, traitements, antécédents et contacts d’urgence. Vous choisissez de la partager avec vos médecins. Le QR code d’urgence, facultatif, affiche un résumé minimal ; vous pouvez le régénérer ou le désactiver à tout moment.',
       a_ar: 'تجمع البطاقة الصحية فصيلة الدم والحساسية والأدوية والسوابق وجهات الاتصال في الطوارئ. أنت من تختار مشاركتها مع أطبائك. رمز QR للطوارئ اختياري ويعرض ملخصاً أدنى، ويمكنك تجديده أو تعطيله في أي وقت.' },
     { q_fr: 'Mes symptômes sont-ils enregistrés ?', q_ar: 'هل تُحفظ أعراضي؟',
-      a_fr: 'Non. Les symptômes saisis dans l’orientation ou l’assistant servent uniquement à calculer la réponse sur notre serveur ; ils ne sont ni stockés ni envoyés à une intelligence artificielle.',
-      a_ar: 'لا. تُستعمل الأعراض المدخلة في التوجيه أو المساعد فقط لحساب الإجابة على خادمنا، ولا تُحفظ ولا تُرسل إلى أي ذكاء اصطناعي.' },
+      a_fr: 'Non. Les symptômes saisis dans l’orientation ou l’assistant ne sont pas stockés par SehhaTN. Lorsque vous écrivez librement à l’assistant, votre message peut être envoyé à un service d’intelligence artificielle tiers pour formuler la réponse ; les signes d’urgence et le niveau de soins sont toujours calculés par nos propres règles. Évitez d’indiquer votre nom ou vos coordonnées.',
+      a_ar: 'لا. لا تحفظ SehhaTN أعراضك. عندما تكتب بحرية للمساعد، قد تُرسل رسالتك إلى خدمة ذكاء اصطناعي خارجية لصياغة الرد، بينما تُحسب علامات الطوارئ ومستوى الرعاية دائماً بقواعدنا الخاصة. تجنب ذكر اسمك أو بيانات الاتصال.' },
   ] },
   { id: 'medecins', fr: 'Médecins', ar: 'الأطباء', items: [
     { q_fr: 'Comment apparaître dans l’annuaire ?', q_ar: 'كيف أظهر في الدليل؟',

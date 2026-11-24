@@ -68,11 +68,11 @@ const SECTIONS: PolicySection[] = [
   {
     id: 'orientation', title_fr: '5. Orientation et assistant santé', title_ar: '5. التوجيه والمساعد الصحي',
     fr: [
-      'Les symptômes que vous décrivez dans l’orientation guidée ou dans l’assistant sont traités par le serveur de SehhaTN uniquement pour calculer la réponse. Ils ne sont jamais transmis à un service d’intelligence artificielle ni à un tiers, et ils ne sont pas enregistrés dans notre base de données.',
+      'Les symptômes que vous décrivez dans l’orientation guidée ou dans l’assistant sont traités par le serveur de SehhaTN uniquement pour calculer la réponse. SehhaTN ne les enregistre pas dans sa base de données. Dans l’assistant, lorsque vous écrivez librement, votre message peut être transmis à un service d’intelligence artificielle tiers, uniquement pour formuler la réponse ; les signes d’urgence, le niveau de soins et la spécialité conseillée sont calculés par nos propres règles. Évitez d’indiquer des informations qui vous identifient.',
       'L’état de la conversation reste dans votre navigateur ; il disparaît lorsque vous recommencez ou fermez la page.',
     ],
     ar: [
-      'تُعالَج الأعراض التي تصفها في التوجيه الموجَّه أو في المساعد من طرف خادم SehhaTN فقط لحساب الإجابة. لا تُرسل أبداً إلى خدمة ذكاء اصطناعي أو إلى طرف ثالث، ولا تُحفظ في قاعدة بياناتنا.',
+      'تُعالَج الأعراض التي تصفها في التوجيه الموجَّه أو في المساعد من طرف خادم SehhaTN فقط لحساب الإجابة. لا تحفظها SehhaTN في قاعدة بياناتها. وفي المساعد، عندما تكتب بحرية، قد تُرسل رسالتك إلى خدمة ذكاء اصطناعي خارجية لصياغة الرد فقط؛ أما علامات الطوارئ ومستوى الرعاية والتخصص المقترح فتُحسب بقواعدنا الخاصة. تجنب ذكر معلومات تعرّف بك.',
       'تبقى حالة المحادثة في متصفحك وتختفي عند إعادة البدء أو إغلاق الصفحة.',
     ],
   },
