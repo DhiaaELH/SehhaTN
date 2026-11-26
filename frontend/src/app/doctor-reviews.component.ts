@@ -57,7 +57,7 @@ interface ReviewPage { average: number; total: number; distribution: Record<stri
   `,
   styles: [`
     :host { display: block; }
-    .rv { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
+    .rv { background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
     .rv h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 800 17px Montserrat, sans-serif; color: var(--deep); }
     .rv h2::before { content: ''; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(var(--teal), var(--mint)); }
     .rv-stats { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 20px; align-items: center; padding-bottom: 14px; border-bottom: 1px dashed var(--line); }
@@ -67,13 +67,13 @@ interface ReviewPage { average: number; total: number; distribution: Record<stri
     .rv-stars { color: #f2a516; letter-spacing: 2px; } .rv-stars.small { font-size: 12px; }
     .rv-bars { display: grid; gap: 5px; }
     .rv-bars div { display: grid; grid-template-columns: 28px 1fr 28px; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
-    .rv-bars i { height: 8px; border-radius: 4px; background: #eef2f7; overflow: hidden; }
+    .rv-bars i { height: 8px; border-radius: 4px; background:var(--surface2); overflow: hidden; }
     .rv-bars em { display: block; height: 100%; background: #f2a516; }
     .rv-list { list-style: none; margin: 0; padding: 0; }
-    .rv-list li { padding: 14px 0; border-bottom: 1px solid #eef2f7; }
+    .rv-list li { padding: 14px 0; border-bottom: 1px solid var(--line); }
     .rv-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
     .rv-head b { color: var(--deep); font-size: 13px; } .rv-head small { color: var(--muted); font-size: 11px; margin-inline-start: auto; }
-    .rv-list p { margin: 6px 0 0; color: #3b4d61; font-size: 14px; line-height: 1.55; }
+    .rv-list p { margin: 6px 0 0; color: var(--text2); font-size: 14px; line-height: 1.55; }
     .rv-reply { margin-top: 8px; padding: 10px 12px; border-radius: 10px; background: var(--pale); }
     .rv-reply small { font-weight: 700; color: var(--navy); font-size: 11px; }
     .rv-more { margin-top: 12px; padding: 8px 14px; border-radius: 10px; }
@@ -85,7 +85,7 @@ interface ReviewPage { average: number; total: number; distribution: Record<stri
     .rv-form textarea { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font: inherit; resize: vertical; }
     .rv-form .primary-btn { justify-self: start; padding: 10px 16px; border-radius: 10px; }
     .rv-hint { color: var(--muted); font-size: 12px; margin: 0; }
-    .rv-link { border: 0; background: none; color: #078b98; font-weight: 700; padding: 0; }
+    .rv-link { border: 0; background: none; color: var(--text2); font-weight: 700; padding: 0; }
     .rv-msg { margin: 0; font-size: 13px; color: #0a7a55; } .rv-msg.err { color: var(--coral); }
     @media (max-width: 520px) { .rv-stats { grid-template-columns: 1fr; } }
   `],

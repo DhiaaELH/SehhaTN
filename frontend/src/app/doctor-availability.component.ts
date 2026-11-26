@@ -14,14 +14,14 @@ interface Day { weekday: number; rows: Row[]; }
     :host { display: block; }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
     .ok { color: #0a7a55; font-size: 11px; margin: 0 0 14px; font-weight: 700; }
-    select { display: block; width: 100%; height: 42px; margin-top: 7px; border: 1px solid #dce4eb;
-             border-radius: 6px; padding: 0 12px; font-size: 11px; background: #fff; }
-    .day { padding: 10px 0; border-top: 1px dashed #dce4eb; }
-    .day-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; color: #17395b; }
+    select { display: block; width: 100%; height: 42px; margin-top: 7px; border: 1px solid var(--line);
+             border-radius: 6px; padding: 0 12px; font-size: 11px; background:var(--surface); }
+    .day { padding: 10px 0; border-top: 1px dashed var(--line); }
+    .day-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 800; color: var(--ink); }
     .range { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
     .range input[type=time] { flex: 1; min-width: 0; height: 36px; margin-top: 0; }
     .closed { color: #748395; font-size: 11px; margin: 6px 0 0; }
-    .mini { border: 0; background: none; color: #078b98; font-weight: 700; font-size: 11px; cursor: pointer; padding: 4px 0; }
+    .mini { border: 0; background: none; color: var(--text2); font-weight: 700; font-size: 11px; cursor: pointer; padding: 4px 0; }
     .mini.danger { color: var(--coral); }
     .tools { display: flex; justify-content: space-between; margin: 4px 0 8px; }
   `],

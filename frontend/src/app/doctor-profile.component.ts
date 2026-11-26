@@ -12,16 +12,16 @@ import { ApiDoctor, DoctorService, GOVERNORATES, LANGUAGES, SPECIALTIES } from '
     :host { display: block; }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
     .ok { color: #0a7a55; font-size: 11px; margin: 0 0 14px; font-weight: 700; }
-    select, textarea { display: block; width: 100%; margin-top: 7px; border: 1px solid #dce4eb; border-radius: 6px;
-                       padding: 0 12px; font-size: 11px; background: #fff; }
+    select, textarea { display: block; width: 100%; margin-top: 7px; border: 1px solid var(--line); border-radius: 6px;
+                       padding: 0 12px; font-size: 11px; background:var(--surface); }
     select { height: 42px; }
     textarea { height: 90px; padding: 10px 12px; resize: vertical; }
     .langs { display: flex; gap: 16px; margin-top: 8px; }
     .langs label { display: flex; align-items: center; gap: 6px; margin: 0; font-weight: 600; }
-        .field { display: block; font-size: 10px; font-weight: 700; color: #455a6e; margin-bottom: 14px; }
+        .field { display: block; font-size: 10px; font-weight: 700; color: var(--text2); margin-bottom: 14px; }
     .langs input[type=checkbox] { appearance: none; -webkit-appearance: none; display: inline-block; flex: none;
       width: 16px; height: 16px; margin: 0; padding: 0; border: 1.5px solid #9fb3c4; border-radius: 4px;
-      background: #fff; cursor: pointer; position: relative; }
+      background:var(--surface); cursor: pointer; position: relative; }
     .langs input[type=checkbox]:checked { background: #00a6b8; border-color: #00a6b8; }
     .langs input[type=checkbox]:checked::after { content: ''; position: absolute; left: 4px; top: 1px;
       width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }

@@ -18,8 +18,8 @@ import { DoctorReviewsComponent } from './doctor-reviews.component';
 
     /* ---------- bandeau ---------- */
     .dp-hero { position: relative; overflow: hidden; border-radius: 22px; padding: 34px 36px 76px; color: #fff;
-      background: radial-gradient(800px 280px at 100% 0%, #00a6b855, transparent 62%),
-                  linear-gradient(135deg, var(--deep), var(--navy) 55%, #0b5d7a); }
+      background:radial-gradient(800px 280px at 100% 0%, #00a6b855, transparent 62%),
+                  linear-gradient(135deg, var(--deep-bg), var(--navy-bg) 55%, #0b5d7a); }
     .dp-ecg { position: absolute; left: 0; right: 0; bottom: 58px; width: 100%; height: 76px; opacity: .55; pointer-events: none; }
     .dp-ecg path { fill: none; stroke: var(--mint); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
       stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.6s .3s ease forwards; }
@@ -39,9 +39,9 @@ import { DoctorReviewsComponent } from './doctor-reviews.component';
 
     /* ---------- chiffres clés ---------- */
     .dp-tiles { position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: -46px 24px 0; }
-    .dp-tile { display: flex; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    .dp-tile { display: flex; align-items: center; gap: 12px; background:var(--surface); border: 1px solid var(--line); border-radius: 14px;
       padding: 14px 16px; box-shadow: 0 10px 28px #0b325e1a; }
-    .dp-tile svg { width: 38px; height: 38px; flex: none; padding: 9px; border-radius: 11px; background: #e7f5f4; color: #078b98;
+    .dp-tile svg { width: 38px; height: 38px; flex: none; padding: 9px; border-radius: 11px; background:var(--surface2); color: var(--text2);
       fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .dp-tile small { display: block; color: var(--muted); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; }
     .dp-tile b { font: 800 15px Montserrat, sans-serif; color: var(--deep); }
@@ -49,18 +49,18 @@ import { DoctorReviewsComponent } from './doctor-reviews.component';
     /* ---------- contenu ---------- */
     .dp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; margin-top: 22px; align-items: start; }
     .dp-main-col { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); }
-    .dp-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
+    .dp-card { background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
     h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 800 17px Montserrat, sans-serif; color: var(--deep); }
     h2::before { content: ''; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(var(--teal), var(--mint)); }
-    .dp-bio { margin: 0; color: #3b4d61; line-height: 1.75; font-size: 14px; }
+    .dp-bio { margin: 0; color: var(--text2); line-height: 1.75; font-size: 14px; }
     .dp-muted { color: var(--muted); font-size: 13px; margin: 0; }
     .dp-langs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .dp-lang { padding: 6px 13px; border-radius: 999px; background: var(--pale); color: var(--navy); font-weight: 700; font-size: 12px; }
 
     .dp-hours { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-    .dp-hours li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; border-radius: 12px; background: #f6f9fe; }
+    .dp-hours li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; border-radius: 12px; background:var(--surface); }
     .dp-days { min-width: 120px; font-weight: 800; color: var(--deep); font-size: 13px; }
-    .dp-slot { padding: 5px 11px; border-radius: 8px; background: #fff; border: 1px solid var(--line); font-weight: 700; font-size: 12px; color: #078b98; }
+    .dp-slot { padding: 5px 11px; border-radius: 8px; background:var(--surface); border: 1px solid var(--line); font-weight: 700; font-size: 12px; color: var(--text2); }
 
     .dp-stars { color: #c5d3e2; font-size: 26px; letter-spacing: 4px; }
     .dp-empty { display: flex; align-items: center; gap: 18px; padding: 8px 0; }
@@ -77,24 +77,24 @@ import { DoctorReviewsComponent } from './doctor-reviews.component';
     .dp-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 44px; border-radius: 10px;
       font-weight: 700; font-size: 13px; cursor: pointer; text-decoration: none; border: 1px solid transparent; transition: transform .15s, box-shadow .15s, background .2s; }
     .dp-btn:hover { transform: translateY(-1px); }
-    .dp-btn-main { background: linear-gradient(135deg, var(--navy), #0d5781); color: #fff; box-shadow: 0 8px 20px #0b325e33; }
-    .dp-btn-soft { background: #fff; color: var(--navy); border-color: var(--line); }
+    .dp-btn-main { background:linear-gradient(135deg, var(--navy-bg), #0d5781); color: #fff; box-shadow: 0 8px 20px #0b325e33; }
+    .dp-btn-soft { background:var(--surface); color: var(--navy); border-color: var(--line); }
     .dp-btn-soft:hover { background: var(--pale); }
     .dp-notice { margin: 0; padding: 10px 12px; border-radius: 10px; background: #fff7e6; color: #8a5a00; font-size: 12px; line-height: 1.5; }
-    .dp-address { margin: 6px 0 0; padding-top: 14px; border-top: 1px dashed var(--line); color: #3b4d61; font-size: 12px; line-height: 1.6; }
-    .dp-address a { display: inline-block; margin-top: 6px; color: #078b98; font-weight: 700; text-decoration: none; }
+    .dp-address { margin: 6px 0 0; padding-top: 14px; border-top: 1px dashed var(--line); color: var(--text2); font-size: 12px; line-height: 1.6; }
+    .dp-address a { display: inline-block; margin-top: 6px; color: var(--text2); font-weight: 700; text-decoration: none; }
     .dp-address a:hover { text-decoration: underline; }
     .dp-address b { display: block; color: var(--deep); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 4px; }
 
     .dp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
     .dp-rating { margin-inline-start: 10px; color: #ffd27a; font-weight: 700; }
     .dp-tags { display: flex; flex-wrap: wrap; gap: 8px; }
-    .dp-tags span { padding: 6px 12px; border-radius: 999px; background: #e7f5f4; color: #07707b; font-weight: 600; font-size: 12px; }
-    .dp-edu { margin: 0; padding-inline-start: 18px; color: #3b4d61; font-size: 13px; line-height: 1.7; }
+    .dp-tags span { padding: 6px 12px; border-radius: 999px; background:var(--surface2); color: var(--text2); font-weight: 600; font-size: 12px; }
+    .dp-edu { margin: 0; padding-inline-start: 18px; color: var(--text2); font-size: 13px; line-height: 1.7; }
     .dp-mt { margin-top: 20px !important; }
     .dp-map { margin-top: 4px; }
     .dp-approx { color: var(--muted); font-size: 11px; }
-    .dp-demo { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background: #f3f4f6; color: #4b5563; font-size: 11px; line-height: 1.5; }
+    .dp-demo { margin: 12px 0 0; padding: 10px 12px; border-radius: 10px; background:var(--surface2); color: var(--text2); font-size: 11px; line-height: 1.5; }
     /* ---------- apparition douce ---------- */
     .dp-rise { animation: rise .6s ease both; }
     .dp-d1 { animation-delay: .05s; } .dp-d2 { animation-delay: .15s; } .dp-d3 { animation-delay: .25s; } .dp-d4 { animation-delay: .35s; }

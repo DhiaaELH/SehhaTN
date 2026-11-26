@@ -128,7 +128,7 @@ const EXTRA: Zone[] = [
     .bm-top p { margin: 4px 0 0; color: var(--muted); font-size: 13.5px; }
     .bm-toggle { display: inline-flex; background: var(--pale); border-radius: 999px; padding: 3px; flex: none; }
     .bm-toggle button { border: 0; background: none; padding: 7px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; color: var(--navy); }
-    .bm-toggle button.on { background: var(--navy); color: #fff; }
+    .bm-toggle button.on { background:var(--navy-bg); color: #fff; }
 
     .bm-body { display: grid; grid-template-columns: minmax(200px, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch; flex: 1; min-height: 0; }
 
@@ -148,7 +148,7 @@ const EXTRA: Zone[] = [
     .bm-lead { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
     .bm-empty { margin: 0; color: var(--muted); font-size: 14.5px; line-height: 1.5; }
     .bm-specs { display: flex; flex-direction: column; gap: 8px; }
-    .bm-specs button { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 10px 14px; font-weight: 600; color: var(--navy); text-align: start; }
+    .bm-specs button { display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--line); background:var(--surface); border-radius: 12px; padding: 10px 14px; font-weight: 600; color: var(--navy); text-align: start; }
     .bm-specs button:hover { border-color: var(--teal); color: var(--teal); }
     .bm-note { margin: 14px 0 0; font-size: 12px; color: var(--muted); line-height: 1.45; }
     .bm-note a { color: var(--coral); font-weight: 700; }
@@ -157,9 +157,9 @@ const EXTRA: Zone[] = [
     .bm-last { margin-top: auto; }
     .bm-cap { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
     .bm-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .bm-chips button { border: 1px solid var(--line); background: #fff; color: var(--navy); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; }
+    .bm-chips button { border: 1px solid var(--line); background:var(--surface); color: var(--navy); border-radius: 999px; padding: 6px 12px; font-size: 12.5px; font-weight: 600; }
     .bm-chips button:hover { border-color: var(--teal); }
-    .bm-chips button.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .bm-chips button.on { background:var(--navy-bg); color: #fff; border-color: var(--navy); }
 
     @media (max-width: 560px) {
       .bm-body { grid-template-columns: 1fr; }

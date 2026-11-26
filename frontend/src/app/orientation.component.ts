@@ -167,19 +167,19 @@ const FLOW: Step[] = ['who', 'alarm', 'category', 'symptoms', 'flags', 'details'
     .or-top h1 { font: 800 clamp(24px, 4vw, 36px)/1.15 Montserrat, sans-serif; color: var(--deep); margin: 8px 0 18px; }
     .or-progress { height: 6px; border-radius: 3px; background: #0b325e14; margin-bottom: 18px; overflow: hidden; }
     .or-progress i { display: block; height: 100%; background: linear-gradient(90deg, var(--teal), var(--mint)); transition: width .3s; }
-    .or-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 26px; box-shadow: 0 10px 30px #0b325e0d; }
+    .or-card { background:var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 26px; box-shadow: 0 10px 30px #0b325e0d; }
     .or-card h2 { margin: 0 0 16px; font: 800 19px/1.3 Montserrat, sans-serif; color: var(--deep); }
     .or-card h2 small { font: 500 13px 'Roboto Flex', sans-serif; color: var(--muted); }
     .or-card h2.mt { margin-top: 24px; }
-    .or-lead { font-size: 16px; line-height: 1.6; color: #34475b; margin: 0 0 18px; }
+    .or-lead { font-size: 16px; line-height: 1.6; color: var(--text2); margin: 0 0 18px; }
     .or-method { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
     .or-method li { display: flex; gap: 12px; padding: 14px; border-radius: 14px; background: var(--pale); }
-    .or-method b { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--navy); color: #fff; font-size: 13px; }
+    .or-method b { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background:var(--navy-bg); color: #fff; font-size: 13px; }
     .or-method strong { display: block; color: var(--deep); font-size: 14px; margin-bottom: 2px; }
-    .or-method span { font-size: 13px; color: #4e6278; line-height: 1.45; }
+    .or-method span { font-size: 13px; color: var(--text2); line-height: 1.45; }
     .or-ladder { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
     .or-ladder span { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: #e8f6ef; color: #0a7a55; }
-    .or-ladder [data-level="2"] { background: #eef5fc; color: #0b5d9e; } .or-ladder [data-level="3"] { background: #fff5e0; color: #9a6200; }
+    .or-ladder [data-level="2"] { background:var(--surface2); color: var(--text2); } .or-ladder [data-level="3"] { background: #fff5e0; color: #9a6200; }
     .or-ladder [data-level="4"] { background: #fff0e8; color: #c2410c; } .or-ladder [data-level="5"] { background: #fdecec; color: #b91c1c; }
     .or-row, .or-nav { display: flex; flex-wrap: wrap; gap: 10px; }
     .or-nav { justify-content: space-between; margin-top: 22px; }
@@ -188,27 +188,27 @@ const FLOW: Step[] = ['who', 'alarm', 'category', 'symptoms', 'flags', 'details'
     .or-note { margin: 16px 0 0; font-size: 12px; color: var(--muted); }
     .or-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
     .or-grid.cats { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-    .or-tile { display: grid; gap: 4px; justify-items: start; text-align: start; padding: 14px; border: 1.5px solid var(--line); border-radius: 14px; background: #fff; color: var(--deep); transition: border-color .15s, transform .15s; }
+    .or-tile { display: grid; gap: 4px; justify-items: start; text-align: start; padding: 14px; border: 1.5px solid var(--line); border-radius: 14px; background:var(--surface); color: var(--deep); transition: border-color .15s, transform .15s; }
     .or-tile:hover { border-color: var(--teal); transform: translateY(-1px); }
-    .or-tile.on { border-color: var(--teal); background: #e9f8f8; }
+    .or-tile.on { border-color: var(--teal); background:var(--surface2); }
     .or-tile span { font-size: 22px; color: var(--teal); }
     .or-tile b { font-size: 14px; } .or-tile small { color: var(--muted); font-size: 12px; }
     .or-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; padding: 12px; border-radius: 12px; background: var(--pale); font-weight: 600; color: var(--deep); }
-    .or-inline button, .or-chips button { border: 1.5px solid var(--line); background: #fff; color: var(--navy); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; }
+    .or-inline button, .or-chips button { border: 1.5px solid var(--line); background:var(--surface); color: var(--navy); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; }
     .or-inline button.on, .or-chips button.on { border-color: var(--teal); background: var(--teal); color: #fff; }
     .or-chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .or-checks { display: grid; gap: 8px; }
-    .or-checks label { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; font-size: 14px; line-height: 1.45; color: #2c3e52; }
+    .or-checks label { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; font-size: 14px; line-height: 1.45; color: var(--ink); }
     .or-checks label.on { border-color: #c2410c; background: #fff4ee; }
     .or-checks input { width: 18px; height: 18px; margin-top: 1px; accent-color: #c2410c; flex: none; }
     .or-sub, .or-chosen { color: var(--muted); font-size: 13px; margin: -8px 0 12px; }
-    .or-link { margin-top: 14px; border: 0; background: none; color: #078b98; font-weight: 700; padding: 0; }
+    .or-link { margin-top: 14px; border: 0; background: none; color: var(--text2); font-weight: 700; padding: 0; }
     .or-scale { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
     .or-scale input { flex: 1 1 240px; accent-color: var(--teal); }
     .or-scale output { font-weight: 800; color: #0a7a55; min-width: 120px; }
     .or-scale output[data-sev="moderate"] { color: #9a6200; } .or-scale output[data-sev="severe"] { color: #c2410c; }
-    .or-gov { display: grid; gap: 6px; margin-top: 22px; font-size: 13px; font-weight: 600; color: #455a6e; }
-    .or-gov select { max-width: 320px; height: 42px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background: #fff; }
+    .or-gov { display: grid; gap: 6px; margin-top: 22px; font-size: 13px; font-weight: 600; color: var(--text2); }
+    .or-gov select { max-width: 320px; height: 42px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background:var(--surface); }
     .or-summary { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
     .or-summary span { font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--pale); color: var(--navy); font-weight: 600; }
     .or-error { color: var(--coral); }

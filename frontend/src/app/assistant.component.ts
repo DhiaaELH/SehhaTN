@@ -26,7 +26,7 @@ import { TriageChatComponent } from './triage-chat.component';
     </section>
   `,
   styles: [`
-    .as-link { border: 0; background: none; color: #078b98; font-weight: 700; padding: 0; margin-inline-start: 6px; }
+    .as-link { border: 0; background: none; color: var(--text2); font-weight: 700; padding: 0; margin-inline-start: 6px; }
     .as-privacy { margin: 14px 0 0; font-size: 12px; color: var(--muted); text-align: center; }
   `],
 })

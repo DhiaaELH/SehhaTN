@@ -202,19 +202,19 @@ const SECTIONS: PolicySection[] = [
     .pv-head p { color: var(--muted); margin: 0; max-width: 70ch; line-height: 1.7; }
     .pv-date { display: inline-block; margin-top: 14px; padding: 5px 12px; border-radius: 999px; background: var(--pale); color: var(--navy); font-size: 12px; font-weight: 700; }
     .pv-layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 28px; align-items: start; }
-    .pv-toc { position: sticky; top: 96px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .pv-toc { position: sticky; top: 96px; background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
     .pv-toc summary { font: 800 13px Montserrat, sans-serif; color: var(--deep); cursor: pointer; list-style: none; }
     .pv-toc summary::-webkit-details-marker { display: none; }
     .pv-toc ol { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 2px; }
-    .pv-toc a { display: block; padding: 6px 8px; border-radius: 8px; color: #3b4d61; font-size: 12.5px; text-decoration: none; }
+    .pv-toc a { display: block; padding: 6px 8px; border-radius: 8px; color: var(--text2); font-size: 12.5px; text-decoration: none; }
     .pv-toc a:hover { background: var(--pale); color: var(--navy); }
     .pv-body { display: grid; gap: 16px; }
-    .pv-sec { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; scroll-margin-top: 96px; }
+    .pv-sec { background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px; scroll-margin-top: 96px; }
     .pv-sec h2 { font: 800 18px Montserrat, sans-serif; color: var(--deep); margin: 0 0 12px; }
-    .pv-sec p { margin: 0 0 10px; color: #3b4d61; line-height: 1.75; font-size: 14px; }
+    .pv-sec p { margin: 0 0 10px; color: var(--text2); line-height: 1.75; font-size: 14px; }
     .pv-sec p:last-child { margin-bottom: 0; }
     .pv-cta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 22px 24px; border-radius: 16px;
-      background: linear-gradient(135deg, var(--deep), var(--navy)); color: #fff; }
+      background:linear-gradient(135deg, var(--deep-bg), var(--navy-bg)); color: #fff; }
     .pv-cta b { font: 800 16px Montserrat, sans-serif; display: block; margin-bottom: 4px; }
     .pv-cta span { color: #cfe1f2; font-size: 13px; }
     .pv-cta a { background: var(--mint); color: var(--deep); font-weight: 800; font-size: 13px; padding: 11px 18px; border-radius: 10px; text-decoration: none; }

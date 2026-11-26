@@ -1,0 +1,29 @@
+/* Angles droits : remplace tous les coins arrondis du site. Aucune couleur, police ni mise en page n'est modifiée.
+   Exceptions : repères de la carte (forme de goutte) et petits points d'état animés. */
+*:not(.sm-pin):not(.sm-user):not(.pulse):not(input[type=checkbox]):not(input[type=radio]),
+*:not(.sm-pin):not(.sm-user):not(.pulse)::before,
+*:not(.sm-pin):not(.sm-user):not(.pulse)::after {
+  border-radius: 0 !important;
+}
+
+/* ---------- thème clair / sombre ---------- */
+:root {
+  --bg: #f7faff; --surface: #fff; --surface2: #eff4ff; --text2: #455a6e;
+  --navy-bg: #0b325e; --deep-bg: #001d3e;
+  color-scheme: light;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #08121f; --surface: #101f33; --surface2: #172b45; --text2: #a9bdd1;
+  --navy-bg: #0e3a66; --deep-bg: #050f1c;
+  --navy: #dbe8f6; --deep: #eaf3fc; --ink: #e5edf7; --muted: #8fa5bc; --pale: #172b45; --white: #101f33;
+  --line: #27425f; --teal: #35c9da; --mint: #45d0bd; --coral: #ff8f86; --green: #7fe3c8;
+}
+html[data-theme='dark'] .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.92) contrast(.9); }
+html[data-theme='dark'] .leaflet-container { background: #0b1624; }
+html[data-theme='dark'] img { filter: brightness(.92); }
+html[data-theme='dark'] .hm-skel, html[data-theme='dark'] .hm-ph { background: var(--surface2); }
+html[data-theme='dark'] ::placeholder { color: #6f869e; }
+html[data-theme='dark'] .qr, html[data-theme='dark'] .qr * { background: #fff; }
+.theme-toggle { min-width: 38px; }
+.hm-tile::after { display: none !important; }

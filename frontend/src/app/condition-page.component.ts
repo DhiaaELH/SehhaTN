@@ -76,7 +76,7 @@ interface Condition {
   styles: [`
     .cp { max-width: 1080px; }
     .cp-back { border: 0; background: none; color: var(--navy); font-weight: 700; padding: 6px 0; margin-bottom: 12px; }
-    .cp-hero { position: relative; border-radius: 22px; overflow: hidden; min-height: 280px; display: flex; align-items: flex-end; background: var(--deep); }
+    .cp-hero { position: relative; border-radius: 22px; overflow: hidden; min-height: 280px; display: flex; align-items: flex-end; background:var(--deep-bg); }
     .cp-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .55; }
     .cp-hero-copy { position: relative; padding: 32px; color: #fff; max-width: 720px; }
     .cp-hero-copy .section-kicker { color: #9ee9e0; }
@@ -86,14 +86,14 @@ interface Condition {
     .cp-emergency a { color: #b91c1c; }
     .cp-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; margin-top: 20px; align-items: start; }
     .cp-main { display: grid; gap: 14px; }
-    .cp-main article { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
+    .cp-main article { background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
     .cp-main article.ok { border-inline-start: 4px solid #0a7a55; } .cp-main article.warn { border-inline-start: 4px solid #c2410c; }
     .cp-main h2 { margin: 0 0 10px; font: 800 16px Montserrat, sans-serif; color: var(--deep); }
-    .cp-main ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; color: #3b4d61; line-height: 1.55; }
-    .cp-main p { margin: 0; color: #3b4d61; line-height: 1.6; }
+    .cp-main ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; color: var(--text2); line-height: 1.55; }
+    .cp-main p { margin: 0; color: var(--text2); line-height: 1.6; }
     .cp-muted { color: var(--muted) !important; font-size: 12px; }
     .cp-side { display: grid; gap: 12px; position: sticky; top: 96px; }
-    .cp-box { display: grid; gap: 8px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+    .cp-box { display: grid; gap: 8px; background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
     .cp-box small { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
     .cp-box b { font: 800 18px Montserrat, sans-serif; color: var(--deep); }
     .cp-box button { padding: 10px; border-radius: 10px; font-weight: 700; }

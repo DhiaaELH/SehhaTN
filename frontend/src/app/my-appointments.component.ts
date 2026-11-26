@@ -12,29 +12,29 @@ import { HealthCardService, SharedHealthCard } from './health-card.service';
   styles: [`
     :host { display: block; }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
-    .sub { margin: 18px 0 8px; font: 800 11px Montserrat, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #455a6e; }
+    .sub { margin: 18px 0 8px; font: 800 11px Montserrat, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--text2); }
     .empty { margin: 0 0 8px; color: #748395; font-size: 11px; }
-    .appt { padding: 12px 0; border-top: 1px dashed #dce4eb; display: grid; gap: 4px; }
+    .appt { padding: 12px 0; border-top: 1px dashed var(--line); display: grid; gap: 4px; }
     .appt.off { opacity: .6; }
     .when { font-weight: 800; font-size: 12px; color: var(--deep); text-transform: capitalize; }
-    .who { font-size: 12px; color: #17395b; }
+    .who { font-size: 12px; color: var(--ink); }
     .meta { font-size: 11px; color: #748395; }
     .foot { display: flex; align-items: center; gap: 12px; margin-top: 4px; flex-wrap: wrap; }
-    .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background: #e7f5f4; color: #078b98; }
+    .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 999px; background:var(--surface2); color: var(--text2); }
     .badge[data-s='cancelled'] { background: #fdeaea; color: var(--coral); }
     .badge[data-s='no_show'] { background: #fff3dc; color: #8a5a00; }
     .badge[data-s='completed'] { background: #e6f2ea; color: #0a7a55; }
-    .mini { border: 0; background: none; color: #078b98; font-weight: 700; font-size: 11px; cursor: pointer; padding: 2px 0; }
+    .mini { border: 0; background: none; color: var(--text2); font-weight: 700; font-size: 11px; cursor: pointer; padding: 2px 0; }
     .mini.danger { color: var(--coral); }
     .mini:disabled { opacity: .5; cursor: not-allowed; }
     .hc-back { position: fixed; inset: 0; z-index: 50; background: #001d3e99; display: grid; place-items: center; padding: 16px; }
-    .hc { width: min(100%, 520px); max-height: 88vh; overflow: auto; background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 20px 50px #0004; }
+    .hc { width: min(100%, 520px); max-height: 88vh; overflow: auto; background:var(--surface); border-radius: 16px; padding: 20px; box-shadow: 0 20px 50px #0004; }
     .hc-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
     .hc-head h2 { margin: 0; font: 800 17px Montserrat, sans-serif; color: var(--deep); }
     .hc-head p { margin: 2px 0 0; font-size: 12px; color: #748395; }
     .hc-close { border: 0; background: var(--pale); border-radius: 8px; width: 32px; height: 32px; font-size: 18px; cursor: pointer; }
     .hc-blood { display: inline-block; padding: 4px 10px; border-radius: 8px; background: #fdeaea; color: var(--coral); font-weight: 800; }
-    .hc h3 { margin: 14px 0 6px; font: 800 11px Montserrat, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #455a6e; }
+    .hc h3 { margin: 14px 0 6px; font: 800 11px Montserrat, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--text2); }
     .hc ul { margin: 0; padding-inline-start: 18px; font-size: 13px; display: grid; gap: 4px; }
     .hc .sev { color: var(--coral); font-weight: 700; }
     .hc .none { font-size: 12px; color: #748395; margin: 0; }

@@ -18,18 +18,18 @@ import { HealthCardService } from './health-card.service';
     .narrow { width: min(100%, 420px); align-self: center; }
     .data-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .data-actions button { flex: 1 1 160px; }
-    .danger-btn { border: 1px solid var(--coral); background: #fff; color: var(--coral); border-radius: 8px; padding: 10px 12px; font-weight: 700; font-size: 12px; }
+    .danger-btn { border: 1px solid var(--coral); background:var(--surface); color: var(--coral); border-radius: 8px; padding: 10px 12px; font-weight: 700; font-size: 12px; }
     .ok { color: #0a7a55; font-size: 12px; font-weight: 700; margin: 0 0 12px; }
     .dlg-back { position: fixed; inset: 0; z-index: 50; background: #001d3e99; display: grid; place-items: center; padding: 16px; }
-    .dlg { width: min(100%, 420px); background: #fff; border-radius: 16px; padding: 22px; box-shadow: 0 20px 50px #0004; }
+    .dlg { width: min(100%, 420px); background:var(--surface); border-radius: 16px; padding: 22px; box-shadow: 0 20px 50px #0004; }
     .dlg h2 { margin: 0 0 8px; font: 800 18px Montserrat, sans-serif; color: var(--coral); }
     .dlg p { font-size: 13px; color: var(--ink); line-height: 1.6; margin: 0 0 12px; }
-    .dlg input { display: block; width: 100%; height: 40px; margin: 6px 0 12px; border: 1px solid #dce4eb; border-radius: 8px; padding: 0 10px; }
+    .dlg input { display: block; width: 100%; height: 40px; margin: 6px 0 12px; border: 1px solid var(--line); border-radius: 8px; padding: 0 10px; }
     .dlg-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .dlg-actions button { flex: 1 1 140px; }
     .error { color: var(--coral); font-size: 11px; margin: 0 0 14px; }
-    select { display: block; width: 100%; height: 42px; margin-top: 7px; border: 1px solid #dce4eb;
-             border-radius: 6px; padding: 0 12px; font-size: 11px; background: #fff; }
+    select { display: block; width: 100%; height: 42px; margin-top: 7px; border: 1px solid var(--line);
+             border-radius: 6px; padding: 0 12px; font-size: 11px; background:var(--surface); }
     .hint { color: #748395; font-size: 10px; margin: 10px 0 0; text-align: center; }
   `],
   template: `

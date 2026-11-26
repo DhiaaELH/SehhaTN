@@ -9,7 +9,7 @@ import { LangService } from './lang.service';
   standalone: true,
   styles: [`
     :host { display: block; padding: 20px 16px 48px; }
-    .ec { max-width: 560px; margin: 0 auto; background: #fff; border: 2px solid #c62828; border-radius: 18px; overflow: hidden;
+    .ec { max-width: 560px; margin: 0 auto; background:var(--surface); border: 2px solid #c62828; border-radius: 18px; overflow: hidden;
       box-shadow: 0 12px 34px #0002; color: #111; }
     .ec-head { background: #c62828; color: #fff; padding: 16px 18px; }
     .ec-head b { display: block; font: 800 24px Montserrat, sans-serif; letter-spacing: .04em; }
@@ -25,7 +25,7 @@ import { LangService } from './lang.service';
     ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 16px; }
     .sev { color: #b71c1c; font-weight: 800; }
     .none { color: #666; font-size: 15px; margin: 0; }
-    .tel { display: inline-block; margin-inline-start: 6px; font-weight: 800; color: #0b325e; }
+    .tel { display: inline-block; margin-inline-start: 6px; font-weight: 800; color: var(--ink); }
     .call { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 16px 18px; padding: 14px; border-radius: 12px;
       background: #c62828; color: #fff; font: 800 18px Montserrat, sans-serif; text-decoration: none; }
     .foot { padding: 0 18px 16px; color: #666; font-size: 12px; }

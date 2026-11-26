@@ -85,7 +85,7 @@ import type { Outcome } from './triage.service';
   `,
   styles: [`
     :host { display: block; }
-    .oc { --c: #0b5d9e; --bg: #eef5fc; background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px #0b325e14; }
+    .oc { --c: #0b5d9e; --bg: #eef5fc; background:var(--surface); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px #0b325e14; }
     .oc[data-level="0"], .oc[data-level="1"] { --c: #0a7a55; --bg: #e8f6ef; }
     .oc[data-level="3"] { --c: #9a6200; --bg: #fff5e0; }
     .oc[data-level="4"] { --c: #c2410c; --bg: #fff0e8; }
@@ -100,13 +100,13 @@ import type { Outcome } from './triage.service';
     .oc-call { display: inline-flex; margin-top: 14px; padding: 12px 18px; border-radius: 12px; background: #b91c1c; color: #fff; font-weight: 800; text-decoration: none; font-size: 16px; }
     section { padding: 16px 24px 0; }
     h3 { margin: 0 0 8px; font: 800 13px Montserrat, sans-serif; color: var(--deep); }
-    .oc-list { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; color: #3b4d61; font-size: 14px; line-height: 1.5; }
+    .oc-list { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; color: var(--text2); font-size: 14px; line-height: 1.5; }
     .oc-list.ok li::marker { color: #0a7a55; }
     .oc-watch .oc-list li::marker { color: #c2410c; }
     .oc-actions { display: flex; flex-wrap: wrap; gap: 10px; }
     .oc-actions button { padding: 11px 16px; border-radius: 10px; font-weight: 700; }
     .oc-docs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; }
-    .oc-doc { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background: #fff; text-align: start; }
+    .oc-doc { display: flex; align-items: center; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 12px; background:var(--surface); text-align: start; }
     .oc-doc:hover { border-color: var(--teal); }
     .oc-doc img, .oc-ph { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; }
     .oc-ph { display: grid; place-items: center; background: var(--pale); color: var(--navy); }

@@ -35,7 +35,7 @@ function viewFromUrl(url: string): View {
     <header class="site-header">
       <a class="brand" href="#accueil" (click)="$event.preventDefault(); go('home')" aria-label="SehhaTN accueil"><span class="brand-mark"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 42S5 30 5 17a10 10 0 0 1 18-6l1 2 1-2a10 10 0 0 1 18 6c0 13-19 25-19 25Z"/><path d="M8 25h9l4-8 6 17 4-9h9"/><path d="M25 5v8m-4-4h8"/></svg></span><span class="brand-type">Sehha<span>TN</span><small>VOTRE SANTÉ, NOTRE PRIORITÉ</small></span></a>
       <nav class="main-nav" aria-label="Navigation principale">@for (n of nav; track n.page) { <button [class.active]="view===n.page" (click)="go(n.page)">{{ t(n.fr, n.ar) }}</button> }</nav>
-      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="account-pill" (click)="go('account')" [attr.aria-label]="auth.user() ? t('Mon compte', 'حسابي') : t('Se connecter ou créer un compte', 'تسجيل الدخول أو إنشاء حساب')"><span class="account-pill-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="account-pill-text">@if (auth.user(); as u) {<b>{{ firstName(u.name) }}</b><small>{{ t('Mon compte', 'حسابي') }}</small>} @else {<b>{{ t('Se connecter', 'تسجيل الدخول') }}</b><small>{{ t('ou créer un compte', 'أو إنشاء حساب') }}</small>}</span></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" [attr.aria-expanded]="mobileOpen" aria-label="Menu">☰</button></div>
+      <div class="header-actions"><button class="language" (click)="toggleLanguage()" aria-label="Changer la langue">{{ lang==='fr' ? 'FR' : 'عربي' }} <span></span> {{ lang==='fr' ? 'عربي' : 'FR' }}</button><button class="language theme-toggle" (click)="toggleTheme()" [attr.aria-label]="dark() ? 'Mode clair' : 'Mode sombre'" [attr.title]="dark() ? 'Mode clair' : 'Mode sombre'">{{ dark() ? '☀' : '☾' }}</button><button class="account-pill" (click)="go('account')" [attr.aria-label]="auth.user() ? t('Mon compte', 'حسابي') : t('Se connecter ou créer un compte', 'تسجيل الدخول أو إنشاء حساب')"><span class="account-pill-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><span class="account-pill-text">@if (auth.user(); as u) {<b>{{ firstName(u.name) }}</b><small>{{ t('Mon compte', 'حسابي') }}</small>} @else {<b>{{ t('Se connecter', 'تسجيل الدخول') }}</b><small>{{ t('ou créer un compte', 'أو إنشاء حساب') }}</small>}</span></button><button class="menu-toggle" (click)="mobileOpen=!mobileOpen" [attr.aria-expanded]="mobileOpen" aria-label="Menu">☰</button></div>
     </header>
     <nav class="mobile-nav" *ngIf="mobileOpen">@for (n of nav; track n.page) { <button (click)="go(n.page)">{{ t(n.fr, n.ar) }}</button> }</nav>
 
@@ -66,11 +66,11 @@ function viewFromUrl(url: string): View {
   </div>
 `, styles: [`
   .dl-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -4px 0 14px; }
-  .dl-near { border: 1px solid var(--line); background: #fff; color: var(--navy); border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px; }
+  .dl-near { border: 1px solid var(--line); background:var(--surface); color: var(--navy); border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 13px; }
   .dl-near.on { background: var(--teal); border-color: var(--teal); color: #fff; }
-  .dl-check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #455a6e; font-weight: 600; }
+  .dl-check { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text2); font-weight: 600; }
   .dl-check input { accent-color: var(--teal); }
-  .dl-tools select { margin-inline-start: auto; height: 36px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background: #fff; }
+  .dl-tools select { margin-inline-start: auto; height: 36px; border: 1px solid var(--line); border-radius: 10px; padding: 0 10px; background:var(--surface); }
   .dl-photo { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
   .dl-more { display: flex; justify-content: center; margin-top: 20px; }
   .dl-more button { padding: 10px 20px; border-radius: 12px; }
@@ -89,6 +89,21 @@ export class AppComponent {
   auth = inject(AuthService);
   private router = inject(Router);
   langService = inject(LangService);
+  readonly dark = signal(this.readTheme());
+  toggleTheme() {
+    this.dark.update((v) => !v);
+    this.applyTheme();
+    try { localStorage.setItem('sehhatn_theme', this.dark() ? 'dark' : 'light'); } catch { /* stockage indisponible */ }
+  }
+  private readTheme(): boolean {
+    try { const v = localStorage.getItem('sehhatn_theme'); if (v) return v === 'dark'; } catch { /* ignore */ }
+    return false;
+  }
+  private applyTheme() {
+    if (typeof document === 'undefined') return;
+    document.documentElement.dataset['theme'] = this.dark() ? 'dark' : 'light';
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', this.dark() ? '#08121f' : '#eff4ff');
+  }
   readonly locating = signal(false);
   readonly geoError = signal('');
   readonly failedPhotos = signal(new Set<number>());
@@ -104,6 +119,7 @@ export class AppComponent {
   );
 
   constructor() {
+    this.applyTheme();
     this.applyQuery(inject(AppLocation).path());
     this.auth.request<{ doctors: number; facilities: number; specialties: number; reviews: number }>('/meta/stats')
       .then((s) => this.stats.set(s)).catch(() => {});

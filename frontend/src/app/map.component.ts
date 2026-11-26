@@ -28,7 +28,7 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
   template: `<div #host class="map-host" [style.height]="height()" role="region" [attr.aria-label]="label()"></div>`,
   styles: [`
     :host { display: block; position: relative; z-index: 0; }
-    .map-host { width: 100%; border-radius: 16px; overflow: hidden; background: #e8eef5; border: 1px solid var(--line); }
+    .map-host { width: 100%; border-radius: 16px; overflow: hidden; background:var(--surface2); border: 1px solid var(--line); }
     :host ::ng-deep .sm-pin { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50% 50% 50% 4px;
       transform: rotate(-45deg); color: #fff; font: 800 13px Montserrat, sans-serif; border: 2px solid #fff; box-shadow: 0 4px 12px #0003; }
     :host ::ng-deep .sm-pin span { transform: rotate(45deg); }
@@ -37,7 +37,7 @@ const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
     :host ::ng-deep .leaflet-popup-content { margin: 12px 14px; font: 13px/1.45 'Roboto Flex', sans-serif; }
     :host ::ng-deep .leaflet-popup-content b { color: var(--deep); display: block; font-size: 14px; }
     :host ::ng-deep .leaflet-popup-content small { color: var(--muted); display: block; margin-top: 2px; }
-    :host ::ng-deep .leaflet-popup-content a { display: inline-block; margin-top: 6px; color: #078b98; font-weight: 700; text-decoration: none; }
+    :host ::ng-deep .leaflet-popup-content a { display: inline-block; margin-top: 6px; color: var(--text2); font-weight: 700; text-decoration: none; }
   `],
 })
 export class MapComponent implements OnDestroy {

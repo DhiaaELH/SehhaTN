@@ -41,7 +41,7 @@ type ChatMessage = { from: 'bot' | 'user'; text: string; kind?: 'urgent' | 'care
   `,
   styles: [`
     .chat-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0 4px; }
-    .chat-quick button { border: 1.5px solid var(--teal); background: #fff; color: #07707b; border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 13px; }
+    .chat-quick button { border: 1.5px solid var(--teal); background:var(--surface); color: var(--text2); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 13px; }
     .chat-quick button:hover { background: var(--teal); color: #fff; }
     .chat-outcome { margin: 6px 0 10px; }
     .typing p { display: flex; gap: 4px; align-items: center; min-height: 20px; }

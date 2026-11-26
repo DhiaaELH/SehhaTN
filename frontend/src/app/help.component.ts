@@ -91,16 +91,16 @@ const fold = (s: string) => s.normalize('NFD').replace(/[̀-ًͯ-ٟ]/g, '').toLo
     h1 { font: 800 clamp(28px, 4.5vw, 42px)/1.1 Montserrat, sans-serif; color: var(--deep); margin: 10px 0; }
     h2 { font: 800 20px Montserrat, sans-serif; color: var(--deep); margin: 0 0 14px; }
     .hp-lede { color: var(--muted); margin: 0 0 18px; line-height: 1.7; }
-    .hp-search { display: flex; align-items: center; gap: 10px; max-width: 560px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
+    .hp-search { display: flex; align-items: center; gap: 10px; max-width: 560px; background:var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 0 14px; }
     .hp-search input { flex: 1; border: 0; outline: 0; height: 48px; font-size: 15px; background: transparent; min-width: 0; }
     .hp-urgent { margin: 24px 0; padding: 18px 20px; border-radius: 16px; background: #fff1f0; border: 1px solid #f5c6c2; }
     .hp-urgent b { color: var(--coral); font-size: 14px; }
     .hp-nums { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0 10px; }
-    .hp-nums a { display: flex; align-items: baseline; gap: 8px; padding: 9px 14px; border-radius: 12px; background: #fff; border: 1px solid #f5c6c2; text-decoration: none; color: var(--deep); font-size: 12.5px; font-weight: 700; }
+    .hp-nums a { display: flex; align-items: baseline; gap: 8px; padding: 9px 14px; border-radius: 12px; background:var(--surface); border: 1px solid #f5c6c2; text-decoration: none; color: var(--deep); font-size: 12.5px; font-weight: 700; }
     .hp-nums a strong { font: 800 20px Montserrat, sans-serif; color: var(--coral); }
     .hp-urgent p { margin: 0; font-size: 12.5px; color: #6b3a37; line-height: 1.6; }
     .hp-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 34px; }
-    .hp-actions a { display: block; padding: 18px; border-radius: 16px; background: #fff; border: 1px solid var(--line); text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
+    .hp-actions a { display: block; padding: 18px; border-radius: 16px; background:var(--surface); border: 1px solid var(--line); text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
     .hp-actions a:hover { transform: translateY(-2px); box-shadow: 0 10px 24px #0b325e14; }
     .hp-actions span { font-size: 22px; color: var(--teal); }
     .hp-actions b { display: block; margin: 8px 0 4px; color: var(--deep); font-size: 14px; }
@@ -108,13 +108,13 @@ const fold = (s: string) => s.normalize('NFD').replace(/[̀-ًͯ-ٟ]/g, '').toLo
     .hp-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 24px; align-items: start; }
     .hp-group { margin-bottom: 22px; }
     .hp-group h3 { font: 800 12px Montserrat, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--teal); margin: 0 0 8px; }
-    details { background: #fff; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; }
+    details { background:var(--surface); border: 1px solid var(--line); border-radius: 12px; margin-bottom: 8px; }
     summary { padding: 14px 16px; font-weight: 700; color: var(--deep); font-size: 14px; cursor: pointer; }
-    details p { margin: 0; padding: 0 16px 16px; color: #3b4d61; font-size: 13.5px; line-height: 1.7; }
+    details p { margin: 0; padding: 0 16px 16px; color: var(--text2); font-size: 13.5px; line-height: 1.7; }
     .hp-empty { color: var(--muted); font-size: 13px; }
-    .hp-form { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 22px; position: sticky; top: 96px; }
-    .hp-form label { display: block; font-size: 12px; font-weight: 700; color: #455a6e; margin-bottom: 12px; }
-    .hp-form input, .hp-form select, .hp-form textarea { display: block; width: 100%; margin-top: 6px; border: 1px solid #dce4eb; border-radius: 10px; padding: 11px 12px; font-size: 14px; background: #fff; color: var(--ink); font-family: inherit; }
+    .hp-form { background:var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 22px; position: sticky; top: 96px; }
+    .hp-form label { display: block; font-size: 12px; font-weight: 700; color: var(--text2); margin-bottom: 12px; }
+    .hp-form input, .hp-form select, .hp-form textarea { display: block; width: 100%; margin-top: 6px; border: 1px solid var(--line); border-radius: 10px; padding: 11px 12px; font-size: 14px; background:var(--surface); color: var(--ink); font-family: inherit; }
     .hp-form textarea { min-height: 130px; resize: vertical; }
     .hp-form .bad { border-color: var(--coral); }
     .hp-err { color: var(--coral); font-size: 11.5px; font-weight: 600; }

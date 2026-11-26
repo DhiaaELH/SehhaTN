@@ -12,33 +12,33 @@ import { AppointmentService, Slot, SlotDay, WEEKDAYS_AR, WEEKDAYS_FR, formatWhen
     .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
     .head h2 { margin: 0; }
     :host { display: block; min-width: 0; scroll-margin-top: 90px; }
-    .sp-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
+    .sp-card { background:var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 24px; box-shadow: 0 8px 28px #17395b0d; }
     h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; font: 800 17px Montserrat, sans-serif; color: var(--deep); }
     h2::before { content: ''; width: 5px; height: 18px; border-radius: 3px; background: linear-gradient(var(--teal), var(--mint)); }
     .muted { margin: 0; color: var(--muted); font-size: 13px; }
     .days { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
     .day { flex: none; display: grid; justify-items: center; gap: 2px; min-width: 62px; padding: 8px 6px; border: 1px solid var(--line);
-           border-radius: 12px; background: #fff; cursor: pointer; color: var(--navy); }
+           border-radius: 12px; background:var(--surface); cursor: pointer; color: var(--navy); }
     .day small { font-size: 10px; text-transform: uppercase; color: var(--muted); }
     .day b { font: 800 18px Montserrat, sans-serif; }
-    .day.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .day.on { background:var(--navy-bg); border-color: var(--navy); color: #fff; }
     .day.on small { color: #cfe4f5; }
     .slots { display: grid; grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); gap: 8px; margin-top: 12px; }
-    .slot { height: 38px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #078b98; font-weight: 700; font-size: 13px; cursor: pointer; }
+    .slot { height: 38px; border: 1px solid var(--line); border-radius: 9px; background:var(--surface); color: var(--text2); font-weight: 700; font-size: 13px; cursor: pointer; }
     .slot:hover:not(:disabled) { background: var(--pale); }
     .slot.on { background: var(--teal); border-color: var(--teal); color: #fff; }
-    .slot.taken { background: #f1f4f8; color: #a4b0bd; text-decoration: line-through; cursor: not-allowed; }
+    .slot.taken { background:var(--surface2); color: #a4b0bd; text-decoration: line-through; cursor: not-allowed; }
     .legend { margin: 12px 0 0; color: var(--muted); font-size: 11px; }
-    .confirm { margin-top: 16px; padding: 16px; border-radius: 12px; background: #f6f9fe; display: grid; gap: 10px; }
-    .confirm p { margin: 0; font-size: 13px; color: #3b4d61; }
+    .confirm { margin-top: 16px; padding: 16px; border-radius: 12px; background:var(--surface); display: grid; gap: 10px; }
+    .confirm p { margin: 0; font-size: 13px; color: var(--text2); }
     textarea { width: 100%; height: 64px; box-sizing: border-box; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 12px; resize: vertical; }
     .btn { height: 42px; border-radius: 10px; border: 1px solid transparent; font-weight: 700; font-size: 13px; cursor: pointer; padding: 0 16px; }
-    .btn.main { background: linear-gradient(135deg, var(--navy), #0d5781); color: #fff; }
+    .btn.main { background:linear-gradient(135deg, var(--navy-bg), #0d5781); color: #fff; }
     .btn.main:disabled { opacity: .5; cursor: not-allowed; }
-    .btn.soft { background: #fff; color: var(--navy); border-color: var(--line); }
+    .btn.soft { background:var(--surface); color: var(--navy); border-color: var(--line); }
     .ok { margin: 12px 0 0; color: #0a7a55; font-weight: 700; font-size: 13px; }
     .err { margin: 12px 0 0; color: var(--coral); font-size: 12px; }
-    .link { border: 0; background: none; color: #078b98; font-weight: 700; cursor: pointer; padding: 0; text-decoration: underline; }
+    .link { border: 0; background: none; color: var(--text2); font-weight: 700; cursor: pointer; padding: 0; text-decoration: underline; }
   `],
   template: `
     <article class="sp-card">
