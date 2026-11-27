@@ -17,7 +17,7 @@ interface NewsItem { title: string; link: string; source: string; image: string 
   template: `
     <div class="hm">
       <header class="hm-head">
-        <h1>{{ t('Le bon soin,', 'الرعاية المناسبة،') }} <span>{{ t('le plus près de vous.', 'أقرب إليك.') }}</span></h1>
+        <h1>{{ t('Le Bon Soin,', 'الرعاية المناسبة،') }} <span>{{ t('le Plus Près de Vous.', 'الأقرب إليك.') }}</span></h1>
       </header>
 
       <nav class="hm-tiles" [attr.aria-label]="t('Accès rapide', 'وصول سريع')">

@@ -31,19 +31,16 @@ const FLOW: Step[] = ['who', 'alarm', 'category', 'symptoms', 'flags', 'details'
     @switch (step()) {
       @case ('intro') {
         <div class="or-card or-intro">
-          <p class="or-lead">{{ t('Répondez à quelques questions : nous vous indiquons s’il faut appeler le SAMU, aller aux urgences, consulter aujourd’hui, prendre rendez-vous ou simplement demander conseil à votre pharmacien — et quel spécialiste consulter.', 'أجب عن بعض الأسئلة: سنخبرك إن كان عليك الاتصال بالإسعاف أو التوجه إلى الاستعجالي أو استشارة طبيب اليوم أو حجز موعد أو مجرد طلب نصيحة من الصيدلي — وأي مختص تستشير.') }}</p>
-          <ol class="or-method">
-            <li><b>1</b><span><strong>{{ t('Les signes d’alerte d’abord', 'علامات الخطر أولاً') }}</strong>{{ t('Les situations vitales sont repérées avant tout le reste.', 'نكتشف الحالات الحرجة قبل أي شيء آخر.') }}</span></li>
-            <li><b>2</b><span><strong>{{ t('Vos symptômes et votre situation', 'أعراضك ووضعك') }}</strong>{{ t('Âge, grossesse, durée et intensité ajustent le niveau de soins.', 'العمر والحمل والمدة والشدة تعدّل مستوى الرعاية.') }}</span></li>
-            <li><b>3</b><span><strong>{{ t('La bonne porte d’entrée', 'الباب المناسب') }}</strong>{{ t('Le professionnel adapté, près de chez vous.', 'المختص المناسب بالقرب منك.') }}</span></li>
-          </ol>
-          <div class="or-ladder">
-            @for (l of catalog()?.levels ?? []; track l.key) { <span [attr.data-level]="l.level">{{ l.title }}</span> }
-          </div>
+          <p class="or-lead">{{ t('Quelques questions, puis nous vous indiquons le soin adapté et le spécialiste à consulter.', 'بضعة أسئلة ثم نحدد لك الرعاية المناسبة والمختص الذي تستشيره.') }}</p>
           <div class="or-row">
-            <button class="primary-btn" [disabled]="!catalog()" (click)="go('who')">{{ catalog() ? t('Commencer', 'ابدأ') : t('Chargement…', 'جارٍ التحميل…') }} →</button>
-            <button class="outline-btn" (click)="router.navigateByUrl('/assistant')">💬 {{ t('Je préfère décrire avec mes mots', 'أفضل الوصف بكلماتي') }}</button>
+            <button class="or-go" [disabled]="!catalog()" (click)="go('who')">{{ catalog() ? t('Commencer', 'ابدأ') : t('Chargement…', 'جارٍ التحميل…') }} →</button>
+            <button class="or-chat" (click)="router.navigateByUrl('/assistant')">💬 {{ t('Je préfère décrire avec mes mots', 'أفضل الوصف بكلماتي') }}</button>
           </div>
+          <ol class="or-method">
+            <li><b>1</b>{{ t('Signes d’alerte', 'علامات الخطر') }}</li>
+            <li><b>2</b>{{ t('Symptômes et situation', 'الأعراض والوضع') }}</li>
+            <li><b>3</b>{{ t('Bonne porte d’entrée', 'الباب المناسب') }}</li>
+          </ol>
           <p class="or-note">ⓘ {{ t('Outil d’orientation, pas de diagnostic. Vos réponses ne sont pas enregistrées. Urgence vitale : 190.', 'أداة توجيه وليست تشخيصاً. لا يتم حفظ إجاباتك. في حالة الطوارئ: 190.') }}</p>
         </div>
       }
@@ -172,15 +169,16 @@ const FLOW: Step[] = ['who', 'alarm', 'category', 'symptoms', 'flags', 'details'
     .or-card h2 small { font: 500 13px 'Roboto Flex', sans-serif; color: var(--muted); }
     .or-card h2.mt { margin-top: 24px; }
     .or-lead { font-size: 16px; line-height: 1.6; color: var(--text2); margin: 0 0 18px; }
-    .or-method { list-style: none; padding: 0; margin: 0 0 18px; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-    .or-method li { display: flex; gap: 12px; padding: 14px; border-radius: 14px; background: var(--pale); }
-    .or-method b { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background:var(--navy-bg); color: #fff; font-size: 13px; }
-    .or-method strong { display: block; color: var(--deep); font-size: 14px; margin-bottom: 2px; }
-    .or-method span { font-size: 13px; color: var(--text2); line-height: 1.45; }
-    .or-ladder { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
-    .or-ladder span { font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 999px; background: #e8f6ef; color: #0a7a55; }
-    .or-ladder [data-level="2"] { background:var(--surface2); color: var(--text2); } .or-ladder [data-level="3"] { background: #fff5e0; color: #9a6200; }
-    .or-ladder [data-level="4"] { background: #fff0e8; color: #c2410c; } .or-ladder [data-level="5"] { background: #fdecec; color: #b91c1c; }
+    .or-method { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; color: var(--muted); }
+    .or-method li { display: flex; align-items: center; gap: 7px; }
+    .or-method b { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; background: var(--surface2); color: var(--text2); font-size: 10px; }
+    .or-go, .or-chat { border: 0; padding: 16px 26px !important; font-size: 16px; font-weight: 800; color: #fff; cursor: pointer; }
+    .or-go { background: var(--teal); }
+    .or-chat { background: var(--navy-bg); }
+    .or-go:hover:not(:disabled) { filter: brightness(.92); } .or-chat:hover { filter: brightness(1.25); }
+    .or-go:disabled { opacity: .6; cursor: wait; }
+    :host-context(html[data-theme='dark']) .or-go { color: #04202a; }
+    @media (max-width: 560px) { .or-go, .or-chat { width: 100%; } }
     .or-row, .or-nav { display: flex; flex-wrap: wrap; gap: 10px; }
     .or-nav { justify-content: space-between; margin-top: 22px; }
     .or-row button, .or-nav button { padding: 12px 18px; border-radius: 12px; font-weight: 700; }
