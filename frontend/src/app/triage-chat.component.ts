@@ -13,7 +13,6 @@ type ChatMessage = { from: 'bot' | 'user'; text: string; kind?: 'urgent' | 'care
   imports: [FormsModule, OutcomeCardComponent],
   template: `
     <div class="triage-chat" [class.rtl-chat]="lang()==='ar'">
-      <div class="chat-safety"><span>ⓘ</span><p>{{ tr('Cet assistant donne une orientation générale, pas un diagnostic. En cas de difficulté à respirer, douleur thoracique intense, perte de connaissance ou saignement important, appelez immédiatement le SAMU au 190.','يقدم هذا المساعد توجيهاً عاماً وليس تشخيصاً. عند صعوبة التنفس أو ألم شديد بالصدر أو فقدان الوعي أو نزيف حاد، اتصل بالإسعاف فوراً على 190.') }} <a href="tel:190">190</a></p></div>
       <div class="chat-transcript" #transcript role="log" aria-live="polite" [attr.aria-label]="tr('Conversation avec l’assistant santé','محادثة مع المساعد الصحي')">
         @for (m of messages(); track $index) {
           @if (m.outcome) {
@@ -32,14 +31,14 @@ type ChatMessage = { from: 'bot' | 'user'; text: string; kind?: 'urgent' | 'care
         </div>
       }
       <div class="chat-composer"><textarea [(ngModel)]="draft" (keydown.enter)="$event.preventDefault();send()" [placeholder]="tr('Décrivez ce que vous ressentez… (ex. « mal au ventre depuis hier »)','صف ما تشعر به… (مثلاً «ألم في البطن منذ البارحة»)')" rows="2" maxlength="1000" [attr.aria-label]="tr('Décrire ses symptômes','وصف الأعراض')"></textarea><button class="primary-btn" (click)="send()" [disabled]="!draft.trim() || busy()">{{ tr('Envoyer','إرسال') }} <span>➤</span></button></div>
-      <div class="chat-suggestions"><span>{{ tr('Exemples :','أمثلة:') }}</span>
-        <button (click)="quick(tr('J’ai mal à la tête depuis ce matin','عندي صداع منذ الصباح'))">{{ tr('Mal de tête','صداع') }}</button>
-        <button (click)="quick(tr('Mon fils de 4 ans a de la fièvre depuis hier','ابني عمره 4 سنوات عنده حمى منذ البارحة'))">{{ tr('Fièvre d’un enfant','حمى عند طفل') }}</button>
-        <button (click)="quick(tr('J’ai mal au dos depuis deux semaines','عندي ألم في الظهر منذ أسبوعين'))">{{ tr('Mal de dos','ألم الظهر') }}</button>
-        <button (click)="reset()">↺ {{ tr('Nouvelle conversation','محادثة جديدة') }}</button></div>
     </div>
+    <div class="chat-foot"><span>{{ tr('Orientation générale, pas un diagnostic. Urgence : ','توجيه عام وليس تشخيصاً. للطوارئ: ') }}<a href="tel:190">190</a>. {{ tr('Évitez d’indiquer votre nom.','تجنب ذكر اسمك.') }}</span><button type="button" (click)="reset()">↺ {{ tr('Nouvelle conversation','محادثة جديدة') }}</button></div>
   `,
   styles: [`
+    .chat-foot { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+    .chat-foot a { font-weight: 800; color: var(--coral); text-decoration: none; }
+    .chat-foot button { border: 1px solid var(--line); background: var(--surface); color: var(--text2); padding: 6px 12px; font-weight: 700; font-size: 12px; cursor: pointer; }
+    .chat-foot button:hover { border-color: var(--teal); color: var(--teal); }
     .chat-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 0 4px; }
     .chat-quick button { border: 1.5px solid var(--teal); background:var(--surface); color: var(--text2); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 13px; }
     .chat-quick button:hover { background: var(--teal); color: #fff; }
@@ -68,7 +67,6 @@ export class TriageChatComponent {
   }
 
   tr(fr: string, ar: string) { return this.lang() === 'fr' ? fr : ar; }
-  quick(value: string) { this.draft = value; this.send(); }
 
   reset() {
     this.state = undefined;
