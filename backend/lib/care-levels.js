@@ -45,4 +45,25 @@ const CATEGORIES = [
 
 const AGE_GROUPS = ['infant', 'child', 'adult', 'senior'];   // <2 ans, 2–15 ans, 15–64 ans, 65 ans et +
 
-module.exports = { LEVELS, CATEGORIES, AGE_GROUPS };
+/** Antécédents et situations qui changent la prudence (question facultative de l'orientation guidée). */
+const HISTORY = [
+  { key: 'diabetes',        fr: 'Diabète',                                ar: 'السكري' },
+  { key: 'hypertension',    fr: 'Hypertension',                           ar: 'ارتفاع ضغط الدم' },
+  { key: 'heart',           fr: 'Maladie du cœur',                        ar: 'مرض القلب' },
+  { key: 'asthma',          fr: 'Asthme ou bronchite chronique',          ar: 'الربو أو التهاب الشعب المزمن' },
+  { key: 'kidney',          fr: 'Maladie des reins',                      ar: 'مرض الكلى' },
+  { key: 'immunosuppressed', fr: 'Défenses affaiblies (chimiothérapie, corticoïdes…)', ar: 'ضعف المناعة (علاج كيميائي، كورتيزون…)' },
+  { key: 'anticoagulant',   fr: 'Traitement qui fluidifie le sang',       ar: 'علاج يميّع الدم' },
+  { key: 'recent_surgery',  fr: 'Opération il y a moins d’un mois',       ar: 'عملية جراحية منذ أقل من شهر' },
+];
+
+/** Cadre de la méthode, affiché dans l'application. `review` reste vide tant qu'aucun professionnel de santé n'a relu le contenu :
+ *  renseignez reviewed_by et reviewed_on (ex. 'Dr Prénom Nom, médecin généraliste', '2026-12-01') pour afficher la mention de relecture. */
+const PROTOCOL = {
+  version: '2026-11',
+  review: { reviewed_by: null, reviewed_on: null },
+  basis_fr: 'Méthode inspirée des protocoles de tri téléphonique (principe NHS 111, régulation médicale du SAMU) : les signes d’alerte d’abord, puis le niveau de soins selon les symptômes, l’âge, la grossesse, la durée, l’intensité et les antécédents.',
+  basis_ar: 'منهج مستوحى من بروتوكولات الفرز الهاتفي (مبدأ NHS 111 والتنظيم الطبي للإسعاف): علامات الخطر أولاً، ثم مستوى الرعاية حسب الأعراض والعمر والحمل والمدة والشدة والسوابق.',
+};
+
+module.exports = { LEVELS, CATEGORIES, AGE_GROUPS, HISTORY, PROTOCOL };

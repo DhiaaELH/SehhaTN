@@ -167,3 +167,70 @@ test('catalogue de l’orientation guidée', () => {
   assert.ok(c.categories.length >= 10);
   assert.ok(c.categories.every((cat) => cat.symptoms.length > 0));
 });
+
+/* ------------------------------------------------ orientation étendue : antécédents, nouveaux cas, méthode */
+
+test('base de connaissances : les nouveaux symptômes référencent des signes d’alerte et une spécialité qui existent', () => {
+  const specialties = require('../db/seed-data/specialties').map((s) => s.slug);
+  const flagKeys = new Set(kb.redFlags.map((f) => f.key));
+  const keys = kb.symptoms.map((s) => s.key);
+  assert.equal(new Set(keys).size, keys.length, 'clés de symptômes uniques');
+  for (const s of kb.symptoms) {
+    assert.ok(specialties.includes(s.specialty_slug), `${s.key} : spécialité ${s.specialty_slug}`);
+    for (const f of s.red_flags) assert.ok(flagKeys.has(f), `${s.key} : signe d’alerte ${f}`);
+    assert.ok(s.advice_fr.length && s.advice_ar.length, `${s.key} : conseils fr et ar`);
+  }
+});
+
+test('intoxication : signe d’alerte vital global, orientation SAMU', () => {
+  assert.ok(facts('mon enfant a avalé un produit toxique').red_flags.includes('poisoning'));
+  assert.ok(!facts('j’ai eu une intoxication alimentaire hier').red_flags.includes('poisoning'));
+  assert.equal(evaluate({ symptoms: [], red_flags: ['poisoning'] }).level, 5);
+});
+
+test('piqûre de scorpion : urgences, pas de spécialité', () => {
+  const r = evaluate({ symptoms: ['bite_sting'], red_flags: ['scorpion_snake'], age_group: 'child' });
+  assert.equal(r.level, 4);
+  assert.equal(r.specialty, null);
+});
+
+test('antécédents : un traitement anticoagulant relève le niveau après un choc à la tête', () => {
+  const sans = evaluate({ symptoms: ['head_injury'], age_group: 'adult', duration: 'hours', severity: 'mild' });
+  const avec = evaluate({ symptoms: ['head_injury'], age_group: 'adult', duration: 'hours', severity: 'mild', history: ['anticoagulant'] });
+  assert.ok(avec.level >= 3 && avec.level > sans.level);
+  assert.ok(avec.reasons.some((r) => r.includes('fluidifie')));
+  assert.ok(avec.factors.some((f) => f.kind === 'history'));
+});
+
+test('antécédents : défenses affaiblies + fièvre, diabète + plaie', () => {
+  assert.equal(evaluate({ symptoms: ['fever'], age_group: 'adult', duration: 'hours', severity: 'mild', history: ['immunosuppressed'] }).level, 3);
+  assert.ok(evaluate({ symptoms: ['wound_burn'], age_group: 'adult', duration: 'days', severity: 'mild', history: ['diabetes'] }).level >= 2);
+});
+
+test('antécédents : sans signe d’alerte, jamais au-delà de « consulter aujourd’hui »', () => {
+  const all = ['diabetes', 'hypertension', 'heart', 'asthma', 'kidney', 'immunosuppressed', 'anticoagulant', 'recent_surgery'];
+  for (const s of kb.symptoms) {
+    const r = evaluate({ symptoms: [s.key], age_group: 'senior', duration: 'weeks', severity: 'severe', history: all });
+    assert.ok(r.level <= 3, `${s.key} → ${r.level}`);
+  }
+});
+
+test('les antécédents ne changent pas un signe d’alerte vital', () => {
+  assert.equal(evaluate({ symptoms: ['chest_pain'], red_flags: ['chest_pain_severe'], history: ['diabetes'] }).level, 5);
+});
+
+test('résultat : explications, facteurs décisifs et cadre de la méthode', () => {
+  const r = evaluate({ symptoms: ['headache'], age_group: 'adult', duration: 'days', severity: 'moderate' });
+  assert.ok(r.factors.some((f) => f.kind === 'symptom'));
+  assert.ok(r.protocol.version && r.protocol.basis.length > 20);
+  assert.equal(r.protocol.reviewed_by, null, 'aucune relecture déclarée tant qu’elle n’a pas eu lieu');
+});
+
+test('catalogue : synonymes pour la recherche, antécédents et méthode', () => {
+  const c = triage.catalog(kb, 'fr');
+  const fever = c.categories.flatMap((x) => x.symptoms).find((s) => s.key === 'fever');
+  assert.ok(fever.synonyms.length > 3);
+  assert.ok(c.history.length >= 8);
+  assert.ok(c.protocol.basis);
+  assert.ok(c.categories.flatMap((x) => x.symptoms).some((s) => s.key === 'renal_colic'));
+});

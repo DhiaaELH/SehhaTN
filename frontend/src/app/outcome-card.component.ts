@@ -17,8 +17,18 @@ import type { Outcome } from './triage.service';
         <p>{{ o.action }}</p>
         @if (o.level === 5) {
           <a class="oc-call" href="tel:190">☎ {{ t('Appeler le 190 maintenant', 'اتصل بالرقم 190 الآن') }}</a>
+        } @else if (o.level === 4) {
+          <a class="oc-call alt" href="tel:190">☎ {{ t('Si votre état s’aggrave : appelez le 190', 'إذا ساءت حالتك: اتصل بالرقم 190') }}</a>
         }
       </header>
+
+      @if (o.factors?.length && !compact()) {
+        <section>
+          <h3>{{ t('Ce qui a compté dans cette orientation', 'ما الذي أثّر في هذا التوجيه') }}</h3>
+          <div class="oc-chips">@for (f of o.factors; track f.text) { @if (f.kind !== 'red_flag') { <span [attr.data-kind]="f.kind">{{ f.text }}</span> } }</div>
+          @for (f of o.factors; track f.text) { @if (f.kind === 'red_flag') { <p class="oc-flag">⚠ {{ f.text }}</p> } }
+        </section>
+      }
 
       @if (o.reasons.length) {
         <section>
@@ -64,7 +74,7 @@ import type { Outcome } from './triage.service';
 
       @if (o.watch_for.length) {
         <section class="oc-watch">
-          <h3>⚠ {{ t('Consultez en urgence si l’un de ces signes apparaît', 'استشر على وجه السرعة إذا ظهرت إحدى هذه العلامات') }}</h3>
+          <h3>⚠ {{ t('Allez aux urgences ou appelez le 190 si l’un de ces signes apparaît', 'توجه إلى الاستعجالي أو اتصل بالرقم 190 إذا ظهرت إحدى هذه العلامات') }}</h3>
           <ul class="oc-list">@for (w of o.watch_for; track w.key) { <li>{{ w.text }}</li> }</ul>
         </section>
       }
@@ -75,6 +85,14 @@ import type { Outcome } from './triage.service';
           <p class="oc-muted">{{ t('Pistes à évoquer avec un professionnel, pas un diagnostic :', 'احتمالات تناقشها مع مختص، وليست تشخيصاً:') }}</p>
           <div class="oc-links">@for (c of o.related_conditions; track c.slug) { <button (click)="openGuide(c.slug)">{{ c.name }} →</button> }</div>
         </section>
+      }
+
+      @if (o.protocol; as pr) {
+        <details class="oc-method">
+          <summary>{{ t('Méthode et relecture', 'المنهج والمراجعة') }}</summary>
+          <p>{{ pr.basis }}</p>
+          <p>{{ pr.reviewed_by ? t('Relu par ', 'تمت المراجعة من طرف ') + pr.reviewed_by + (pr.reviewed_on ? ' · ' + pr.reviewed_on : '') : t('Ce contenu n’a pas encore été relu par un professionnel de santé : il ne remplace jamais un avis médical.', 'لم يراجع مختص في الصحة هذا المحتوى بعد: ولا يغني أبداً عن رأي الطبيب.') }}</p>
+        </details>
       }
 
       <footer class="oc-foot">
@@ -112,6 +130,15 @@ import type { Outcome } from './triage.service';
     .oc-ph { display: grid; place-items: center; background: var(--pale); color: var(--navy); }
     .oc-doc b { display: block; color: var(--deep); font-size: 13px; }
     .oc-doc small { color: var(--muted); font-size: 12px; }
+    .oc-call.alt { background: transparent; color: var(--c); border: 2px solid var(--c); font-size: 14px; }
+    .oc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .oc-chips span { padding: 5px 11px; background: var(--pale); color: var(--navy); font-size: 13px; font-weight: 600; }
+    .oc-chips span[data-kind='history'] { background: var(--bg); color: var(--c); }
+    .oc-flag { margin: 8px 0 0; color: var(--c); font-size: 13px; line-height: 1.5; }
+    .oc-method { margin: 14px 24px 0; font-size: 12px; color: var(--muted); }
+    .oc-method summary { cursor: pointer; font-weight: 700; color: var(--text2); }
+    .oc-method p { margin: 6px 0 0; line-height: 1.55; }
+    .compact .oc-method { margin-inline: 18px; }
     .oc-muted { margin: 0 0 8px; color: var(--muted); font-size: 12px; }
     .oc-links { display: flex; flex-wrap: wrap; gap: 8px; }
     .oc-links button { border: 1px solid var(--line); background: var(--pale); color: var(--navy); border-radius: 999px; padding: 6px 12px; font-weight: 600; font-size: 13px; }

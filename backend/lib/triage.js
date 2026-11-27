@@ -10,12 +10,35 @@
  *   5. Pistes (jamais un diagnostic) : affections de la base de connaissances qui partagent le plus de symptômes.
  *
  *  Aucune donnée n'est envoyée à un service externe ; tout est déterministe et testable. */
-const { LEVELS, CATEGORIES } = require('./care-levels');
+const { LEVELS, CATEGORIES, HISTORY, PROTOCOL } = require('./care-levels');
 
 const MAX_FLAG_QUESTIONS = 4;
 const DURATIONS = ['hours', 'days', 'week', 'weeks'];      // < 24 h, 1–3 jours, 4–7 jours, > 1 semaine
 const SEVERITIES = ['mild', 'moderate', 'severe'];
 const AGE_GROUPS = ['infant', 'child', 'adult', 'senior'];
+const HISTORY_KEYS = HISTORY.map((h) => h.key);
+
+/** Antécédent + symptôme concerné → niveau minimal (jamais au-delà de « consulter aujourd'hui » sans signe d'alerte). */
+const HISTORY_RULES = [
+  { history: 'anticoagulant', symptoms: ['head_injury', 'wound_burn', 'rectal_bleeding', 'blood_urine', 'injury_sprain', 'bite_sting', 'post_surgery'], min: 3,
+    fr: 'Sous traitement qui fluidifie le sang, une blessure ou un saignement justifie un avis médical aujourd’hui.', ar: 'مع علاج يميّع الدم، تستدعي الإصابة أو النزيف رأياً طبياً اليوم.' },
+  { history: 'immunosuppressed', symptoms: ['fever', 'flu_like', 'cough', 'wound_burn', 'urinary_burning', 'bite_sting', 'diarrhea'], min: 3,
+    fr: 'Avec des défenses affaiblies, une infection possible doit être examinée aujourd’hui.', ar: 'مع ضعف المناعة، يجب فحص أي عدوى محتملة اليوم.' },
+  { history: 'diabetes', symptoms: ['wound_burn', 'bite_sting', 'vomiting', 'diarrhea', 'fever', 'urinary_burning', 'diabetes_concern'], min: 2,
+    fr: 'Chez une personne diabétique, ce symptôme mérite un avis médical rapide.', ar: 'عند مريض السكري، يستحق هذا العرض رأياً طبياً سريعاً.' },
+  { history: 'heart', symptoms: ['chest_pain', 'palpitations', 'breathlessness', 'dizziness', 'leg_swelling'], min: 3,
+    fr: 'Avec une maladie du cœur, ce symptôme doit être évalué aujourd’hui.', ar: 'مع مرض القلب، يجب تقييم هذا العرض اليوم.' },
+  { history: 'hypertension', symptoms: ['chest_pain', 'palpitations', 'headache', 'dizziness', 'high_blood_pressure'], min: 2,
+    fr: 'Avec une hypertension, faites vérifier votre tension et consultez.', ar: 'مع ارتفاع الضغط، تحقق من ضغطك واستشر طبيباً.' },
+  { history: 'asthma', symptoms: ['cough', 'breathlessness', 'asthma_wheeze', 'flu_like'], min: 2,
+    fr: 'Chez une personne asthmatique, un symptôme respiratoire justifie un avis médical.', ar: 'عند المصاب بالربو، يستدعي العرض التنفسي رأياً طبياً.' },
+  { history: 'kidney', symptoms: ['urinary_burning', 'vomiting', 'diarrhea', 'renal_colic', 'blood_urine', 'fever'], min: 2,
+    fr: 'Avec une maladie des reins, évitez les médicaments sans avis et consultez.', ar: 'مع مرض الكلى، تجنب الأدوية دون رأي واستشر طبيباً.' },
+  { history: 'recent_surgery', symptoms: ['fever', 'wound_burn', 'post_surgery', 'abdominal_pain', 'leg_swelling'], min: 3,
+    fr: 'Après une opération récente, ce symptôme doit être vu aujourd’hui.', ar: 'بعد عملية حديثة، يجب فحص هذا العرض اليوم.' },
+];
+
+
 
 // Signes d'alerte qui n'ont de sens que dans un contexte précis.
 const FLAG_CONTEXT = {
@@ -129,6 +152,11 @@ function yesNo(raw) {
 
 /* ------------------------------------------------------------- évaluation */
 
+/** Cadre de la méthode et mention de relecture, envoyés avec chaque résultat. */
+function protocolFor(lang) {
+  return { version: PROTOCOL.version, basis: lang === 'ar' ? PROTOCOL.basis_ar : PROTOCOL.basis_fr, reviewed_by: PROTOCOL.review.reviewed_by, reviewed_on: PROTOCOL.review.reviewed_on };
+}
+
 const byKey = (list) => new Map(list.map((x) => [x.key, x]));
 
 /** Signes d'alerte à vérifier pour ces symptômes, du plus grave au moins grave. */
@@ -191,6 +219,13 @@ function evaluate(kb, input) {
       if (symptoms.some((s) => ['belly', 'women', 'urinary'].includes(s.category))) level += 1;
       say('Pendant la grossesse, demandez conseil avant de prendre un médicament et faites-vous examiner.', 'أثناء الحمل، استشر قبل تناول أي دواء واطلب فحصاً.');
     }
+    const history = (input.history ?? []).filter((h) => HISTORY_KEYS.includes(h));
+    for (const r of HISTORY_RULES) {
+      if (history.includes(r.history) && symptoms.some((x) => r.symptoms.includes(x.key)) && level < r.min) {
+        level = r.min;
+        say(r.fr, r.ar);
+      }
+    }
     if (!selfCareOk && level < 1) level = 1;
     level = Math.min(level, 3);                     // seuls les signes d'alerte mènent aux urgences
     if (level === before && symptoms.length) {
@@ -240,6 +275,12 @@ function evaluate(kb, input) {
     .map((f) => ({ key: f.key, text: L(f, 'question'), level: f.level }));
 
   const info = LEVELS[level];
+  const histLabel = (k) => { const h = HISTORY.find((x) => x.key === k); return h ? (lang === 'ar' ? h.ar : h.fr) : null; };
+  const factors = [
+    ...positive.map((f) => ({ kind: 'red_flag', text: L(f, 'question') })),
+    ...symptoms.map((x) => ({ kind: 'symptom', text: L(x, 'label') })),
+    ...(positive.length ? [] : (input.history ?? []).map(histLabel).filter(Boolean).map((text) => ({ kind: 'history', text }))),
+  ];
   return {
     level,
     level_key: info.key,
@@ -247,6 +288,8 @@ function evaluate(kb, input) {
     title: lang === 'ar' ? info.ar : info.fr,
     action: lang === 'ar' ? info.action_ar : info.action_fr,
     reasons: [...new Set(reasons)],
+    factors,
+    protocol: protocolFor(lang),
     specialty,
     red_flags: positive.map((f) => f.key),
     advice,
@@ -439,13 +482,15 @@ function catalog(kb, lang = 'fr') {
     categories: CATEGORIES.map((c) => ({
       key: c.key, icon: c.icon, label: lang === 'ar' ? c.ar : c.fr,
       symptoms: kb.symptoms.filter((s) => s.category === c.key).map((s) => ({
-        key: s.key, label: L(s, 'label'),
+        key: s.key, label: L(s, 'label'), synonyms: s.synonyms ?? [],
         red_flags: (s.red_flags ?? []).filter((k) => kb.redFlags.some((f) => f.key === k)),
       })),
     })).filter((c) => c.symptoms.length),
+    history: HISTORY.map((h) => ({ key: h.key, label: lang === 'ar' ? h.ar : h.fr })),
+    protocol: protocolFor(lang),
     red_flags: Object.fromEntries(kb.redFlags.map((f) => [f.key, { question: L(f, 'question'), level: f.level, context: FLAG_CONTEXT[f.key] ? f.key : null }])),
   };
 }
 
 module.exports = { normalize, extractFacts, yesNo, evaluate, chatTurn, greeting, catalog, flagsToAsk, emptyState,
-  DURATIONS, SEVERITIES, AGE_GROUPS };
+  DURATIONS, SEVERITIES, AGE_GROUPS, HISTORY_KEYS };

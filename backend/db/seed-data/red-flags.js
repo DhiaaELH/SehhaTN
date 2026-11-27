@@ -353,4 +353,5 @@ module.exports = [
     advice_fr: 'Toute douleur thoracique qui persiste ou revient doit être évaluée par un médecin aujourd’hui. Appelez le 190 si elle devient forte ou s’accompagne de sueurs ou d’essoufflement.',
     advice_ar: 'يجب أن يقيّم طبيب أي ألم في الصدر يستمر أو يتكرر اليوم. اتصل بالرقم 190 إذا أصبح قوياً أو رافقه تعرق أو ضيق تنفس.',
   },
+  ...require('./red-flags-extra'),
 ];

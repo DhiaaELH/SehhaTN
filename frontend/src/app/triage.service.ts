@@ -9,6 +9,7 @@ export interface SuggestedDoctor {
   id: number; name: string; specialty: string; city: string; governorate: string; photo_url: string | null;
   consultation_fee: number | null; verified: boolean; teleconsultation: boolean; rating: number; review_count: number;
 }
+export interface Protocol { version: string; basis: string; reviewed_by: string | null; reviewed_on: string | null }
 export interface Outcome {
   level: number;
   level_key: 'self_care' | 'pharmacist' | 'consult' | 'consult_today' | 'urgent' | 'emergency';
@@ -16,6 +17,8 @@ export interface Outcome {
   title: string;
   action: string;
   reasons: string[];
+  factors?: { kind: 'red_flag' | 'symptom' | 'history'; text: string }[];
+  protocol?: Protocol;
   specialty: { slug: string; name: string; name_fr: string; icon: string | null } | null;
   red_flags: string[];
   advice: string[];
@@ -28,7 +31,9 @@ export interface Outcome {
 export interface Catalog {
   levels: { level: number; key: string; color: string; title: string }[];
   global_red_flags: { key: string; question: string; level: number }[];
-  categories: { key: string; icon: string; label: string; symptoms: { key: string; label: string; red_flags: string[] }[] }[];
+  categories: { key: string; icon: string; label: string; symptoms: { key: string; label: string; synonyms: string[]; red_flags: string[] }[] }[];
+  history: { key: string; label: string }[];
+  protocol: Protocol;
   red_flags: Record<string, { question: string; level: number; context: string | null }>;
 }
 export interface QuickReply { label: string; answer: { field: string; value: unknown } }
@@ -40,7 +45,7 @@ export interface ChatTurn {
 }
 export interface EvaluateInput {
   symptoms: string[]; red_flags: string[]; age_group: AgeGroup | null; pregnant: boolean | null;
-  duration: Duration | null; severity: Severity | null; lang: 'fr' | 'ar'; governorate?: string;
+  duration: Duration | null; severity: Severity | null; history?: string[]; lang: 'fr' | 'ar'; governorate?: string;
 }
 
 @Injectable({ providedIn: 'root' })

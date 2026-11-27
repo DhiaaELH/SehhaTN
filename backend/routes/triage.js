@@ -17,6 +17,7 @@ const context = {
   pregnant: z.boolean().nullish(),
   duration: z.enum(triage.DURATIONS).nullish(),
   severity: z.enum(triage.SEVERITIES).nullish(),
+  history: z.array(z.enum(triage.HISTORY_KEYS)).max(8).default([]),
 };
 
 const evaluateSchema = z.object({ ...context, lang, governorate: z.string().trim().max(60).optional() });
