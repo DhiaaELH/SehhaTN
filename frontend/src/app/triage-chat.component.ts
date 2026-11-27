@@ -89,6 +89,8 @@ export class TriageChatComponent {
     this.turn({ answer: q.answer });
   }
 
+  /** Typographie française : espace insécable avant « : ; ! ? » pour que le signe ne passe jamais seul à la ligne. */
+  private fr(text: string) { return this.lang() === 'fr' ? text.replace(/ ([:;!?»])/g, '\u00A0$1').replace(/(«) /g, '$1\u00A0') : text; }
   private push(m: ChatMessage) { this.messages.update((list) => [...list, m]); if (!m.outcome) this.scrollDown(); }
 
   private async turn(body: { message?: string; answer?: QuickReply['answer'] }) {
@@ -98,7 +100,7 @@ export class TriageChatComponent {
     try {
       const r = await this.triage.chat({ ...body, state: this.state, lang: this.lang(), governorate: this.governorate() || undefined });
       this.state = r.state;
-      for (const m of r.messages) this.push({ from: 'bot', text: m.text, kind: m.kind });
+      for (const m of r.messages) this.push({ from: 'bot', text: this.fr(m.text), kind: m.kind });
       if (r.outcome) {
         this.push({ from: 'bot', text: '', outcome: r.outcome });
         this.push({ from: 'bot', text: this.tr('Vous pouvez décrire un autre symptôme ou recommencer une nouvelle conversation.', 'يمكنك وصف عرض آخر أو بدء محادثة جديدة.') });
