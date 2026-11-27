@@ -49,3 +49,8 @@ html[data-theme='dark'] { --chat-bg: #0a1a2b; --chat-pattern: rgba(110, 190, 230
 .chat-composer textarea { background: var(--surface) !important; color: var(--ink); border: 2px solid var(--line) !important; font-size: 14px !important; min-height: 56px; }
 .chat-composer textarea:focus { border-color: var(--teal) !important; outline: none; }
 @media (max-width: 700px) { .chat-transcript { height: 320px !important; padding: 12px !important; } .chat-message p, .chat-composer textarea { font-size: 13px !important; } }
+
+/* Mode sombre : le bandeau d'en-tête des pages garde un fond clair, son texte reste donc foncé. */
+html[data-theme='dark'] .page-intro h1 { color: #001d3e; }
+html[data-theme='dark'] .page-intro p { color: #455a6e; }
+html[data-theme='dark'] .page-intro .section-kicker { color: #00788a; }

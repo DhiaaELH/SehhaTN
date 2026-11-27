@@ -277,7 +277,7 @@ function norm(s: string): string {
     .or-search { display: block; margin: 0 0 12px; }
     .or-search input { width: 100%; height: 50px; border: 2px solid var(--line); padding: 0 14px; font-size: 16px; background: var(--surface); color: var(--ink); }
     .or-search input:focus { border-color: var(--teal); outline: none; }
-    .sr { position: absolute; left: -9999px; }
+    .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .or-found { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
     .or-found button small { display: block; font-size: 11px; font-weight: 500; opacity: .7; }
     .or-chosen-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 4px 0 14px; font-size: 13px; color: var(--muted); }
